@@ -89,20 +89,20 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(7, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 13);
+            this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "# of rows (5-83)";
+            this.label1.Text = "# of rows (5-83):";
             // 
             // rowsTB
             // 
-            this.rowsTB.Location = new System.Drawing.Point(109, 13);
+            this.rowsTB.Location = new System.Drawing.Point(114, 13);
             this.rowsTB.Name = "rowsTB";
             this.rowsTB.Size = new System.Drawing.Size(49, 20);
             this.rowsTB.TabIndex = 1;
             // 
             // colsTB
             // 
-            this.colsTB.Location = new System.Drawing.Point(109, 37);
+            this.colsTB.Location = new System.Drawing.Point(114, 37);
             this.colsTB.Name = "colsTB";
             this.colsTB.Size = new System.Drawing.Size(49, 20);
             this.colsTB.TabIndex = 3;
@@ -112,9 +112,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(7, 44);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(98, 13);
+            this.label2.Size = new System.Drawing.Size(101, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "# of columns (5-83)";
+            this.label2.Text = "# of columns (5-83):";
             // 
             // newGridBtn
             // 
