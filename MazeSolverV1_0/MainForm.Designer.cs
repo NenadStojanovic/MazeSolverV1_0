@@ -1,6 +1,6 @@
 ﻿namespace MazeSolverV1_0
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,28 +30,28 @@
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.rowsTB = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.solveMazeBtn = new System.Windows.Forms.Button();
+            this.Algorithms = new System.Windows.Forms.GroupBox();
+            this.dijkstraRB = new System.Windows.Forms.RadioButton();
+            this.greedyRB = new System.Windows.Forms.RadioButton();
+            this.aStarRB = new System.Windows.Forms.RadioButton();
+            this.bfsRB = new System.Windows.Forms.RadioButton();
+            this.dfsRB = new System.Windows.Forms.RadioButton();
+            this.generateMazeBtn = new System.Windows.Forms.Button();
+            this.clearBtn = new System.Windows.Forms.Button();
+            this.newGridBtn = new System.Windows.Forms.Button();
             this.colsTB = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.newGridBtn = new System.Windows.Forms.Button();
-            this.clearBtn = new System.Windows.Forms.Button();
-            this.generateMazeBtn = new System.Windows.Forms.Button();
-            this.Algorithms = new System.Windows.Forms.GroupBox();
-            this.dfsRB = new System.Windows.Forms.RadioButton();
-            this.bfsRB = new System.Windows.Forms.RadioButton();
-            this.aStarRB = new System.Windows.Forms.RadioButton();
-            this.greedyRB = new System.Windows.Forms.RadioButton();
-            this.dijkstraRB = new System.Windows.Forms.RadioButton();
-            this.solveMazeBtn = new System.Windows.Forms.Button();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.label3 = new System.Windows.Forms.Label();
+            this.rowsTB = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.outputMsgLabel = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox2.SuspendLayout();
-            this.Algorithms.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.Algorithms.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,21 +84,128 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Menu";
             // 
-            // label1
+            // label3
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "# of rows (5-83):";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(60, 283);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(87, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Animation Speed";
             // 
-            // rowsTB
+            // trackBar1
             // 
-            this.rowsTB.Location = new System.Drawing.Point(114, 13);
-            this.rowsTB.Name = "rowsTB";
-            this.rowsTB.Size = new System.Drawing.Size(49, 20);
-            this.rowsTB.TabIndex = 1;
+            this.trackBar1.Location = new System.Drawing.Point(7, 299);
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(171, 45);
+            this.trackBar1.TabIndex = 9;
+            // 
+            // solveMazeBtn
+            // 
+            this.solveMazeBtn.BackColor = System.Drawing.Color.SpringGreen;
+            this.solveMazeBtn.Location = new System.Drawing.Point(6, 251);
+            this.solveMazeBtn.Name = "solveMazeBtn";
+            this.solveMazeBtn.Size = new System.Drawing.Size(180, 23);
+            this.solveMazeBtn.TabIndex = 8;
+            this.solveMazeBtn.Text = "Solve Maze";
+            this.solveMazeBtn.UseVisualStyleBackColor = false;
+            // 
+            // Algorithms
+            // 
+            this.Algorithms.Controls.Add(this.dijkstraRB);
+            this.Algorithms.Controls.Add(this.greedyRB);
+            this.Algorithms.Controls.Add(this.aStarRB);
+            this.Algorithms.Controls.Add(this.bfsRB);
+            this.Algorithms.Controls.Add(this.dfsRB);
+            this.Algorithms.Location = new System.Drawing.Point(7, 133);
+            this.Algorithms.Name = "Algorithms";
+            this.Algorithms.Size = new System.Drawing.Size(179, 112);
+            this.Algorithms.TabIndex = 7;
+            this.Algorithms.TabStop = false;
+            this.Algorithms.Text = "Algorithms";
+            // 
+            // dijkstraRB
+            // 
+            this.dijkstraRB.AutoSize = true;
+            this.dijkstraRB.Location = new System.Drawing.Point(7, 89);
+            this.dijkstraRB.Name = "dijkstraRB";
+            this.dijkstraRB.Size = new System.Drawing.Size(60, 17);
+            this.dijkstraRB.TabIndex = 4;
+            this.dijkstraRB.TabStop = true;
+            this.dijkstraRB.Text = "Dijkstra";
+            this.dijkstraRB.UseVisualStyleBackColor = true;
+            // 
+            // greedyRB
+            // 
+            this.greedyRB.AutoSize = true;
+            this.greedyRB.Location = new System.Drawing.Point(101, 55);
+            this.greedyRB.Name = "greedyRB";
+            this.greedyRB.Size = new System.Drawing.Size(59, 17);
+            this.greedyRB.TabIndex = 3;
+            this.greedyRB.TabStop = true;
+            this.greedyRB.Text = "Greedy";
+            this.greedyRB.UseVisualStyleBackColor = true;
+            // 
+            // aStarRB
+            // 
+            this.aStarRB.AutoSize = true;
+            this.aStarRB.Location = new System.Drawing.Point(6, 55);
+            this.aStarRB.Name = "aStarRB";
+            this.aStarRB.Size = new System.Drawing.Size(36, 17);
+            this.aStarRB.TabIndex = 2;
+            this.aStarRB.TabStop = true;
+            this.aStarRB.Text = "A*";
+            this.aStarRB.UseVisualStyleBackColor = true;
+            // 
+            // bfsRB
+            // 
+            this.bfsRB.AutoSize = true;
+            this.bfsRB.Location = new System.Drawing.Point(102, 20);
+            this.bfsRB.Name = "bfsRB";
+            this.bfsRB.Size = new System.Drawing.Size(45, 17);
+            this.bfsRB.TabIndex = 1;
+            this.bfsRB.TabStop = true;
+            this.bfsRB.Text = "BFS";
+            this.bfsRB.UseVisualStyleBackColor = true;
+            // 
+            // dfsRB
+            // 
+            this.dfsRB.AutoSize = true;
+            this.dfsRB.Location = new System.Drawing.Point(7, 20);
+            this.dfsRB.Name = "dfsRB";
+            this.dfsRB.Size = new System.Drawing.Size(46, 17);
+            this.dfsRB.TabIndex = 0;
+            this.dfsRB.TabStop = true;
+            this.dfsRB.Text = "DFS";
+            this.dfsRB.UseVisualStyleBackColor = true;
+            this.dfsRB.CheckedChanged += new System.EventHandler(this.dfsRB_CheckedChanged);
+            // 
+            // generateMazeBtn
+            // 
+            this.generateMazeBtn.Location = new System.Drawing.Point(10, 103);
+            this.generateMazeBtn.Name = "generateMazeBtn";
+            this.generateMazeBtn.Size = new System.Drawing.Size(156, 23);
+            this.generateMazeBtn.TabIndex = 6;
+            this.generateMazeBtn.Text = "Generate Maze";
+            this.generateMazeBtn.UseVisualStyleBackColor = true;
+            // 
+            // clearBtn
+            // 
+            this.clearBtn.Location = new System.Drawing.Point(91, 74);
+            this.clearBtn.Name = "clearBtn";
+            this.clearBtn.Size = new System.Drawing.Size(75, 23);
+            this.clearBtn.TabIndex = 5;
+            this.clearBtn.Text = "Clear";
+            this.clearBtn.UseVisualStyleBackColor = true;
+            // 
+            // newGridBtn
+            // 
+            this.newGridBtn.Location = new System.Drawing.Point(10, 74);
+            this.newGridBtn.Name = "newGridBtn";
+            this.newGridBtn.Size = new System.Drawing.Size(75, 23);
+            this.newGridBtn.TabIndex = 4;
+            this.newGridBtn.Text = "New Grid";
+            this.newGridBtn.UseVisualStyleBackColor = true;
             // 
             // colsTB
             // 
@@ -116,127 +223,21 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "# of columns (5-83):";
             // 
-            // newGridBtn
+            // rowsTB
             // 
-            this.newGridBtn.Location = new System.Drawing.Point(10, 74);
-            this.newGridBtn.Name = "newGridBtn";
-            this.newGridBtn.Size = new System.Drawing.Size(75, 23);
-            this.newGridBtn.TabIndex = 4;
-            this.newGridBtn.Text = "New Grid";
-            this.newGridBtn.UseVisualStyleBackColor = true;
+            this.rowsTB.Location = new System.Drawing.Point(114, 13);
+            this.rowsTB.Name = "rowsTB";
+            this.rowsTB.Size = new System.Drawing.Size(49, 20);
+            this.rowsTB.TabIndex = 1;
             // 
-            // clearBtn
+            // label1
             // 
-            this.clearBtn.Location = new System.Drawing.Point(91, 74);
-            this.clearBtn.Name = "clearBtn";
-            this.clearBtn.Size = new System.Drawing.Size(75, 23);
-            this.clearBtn.TabIndex = 5;
-            this.clearBtn.Text = "Clear";
-            this.clearBtn.UseVisualStyleBackColor = true;
-            // 
-            // generateMazeBtn
-            // 
-            this.generateMazeBtn.Location = new System.Drawing.Point(10, 103);
-            this.generateMazeBtn.Name = "generateMazeBtn";
-            this.generateMazeBtn.Size = new System.Drawing.Size(156, 23);
-            this.generateMazeBtn.TabIndex = 6;
-            this.generateMazeBtn.Text = "Generate Maze";
-            this.generateMazeBtn.UseVisualStyleBackColor = true;
-            // 
-            // Algorithms
-            // 
-            this.Algorithms.Controls.Add(this.dijkstraRB);
-            this.Algorithms.Controls.Add(this.greedyRB);
-            this.Algorithms.Controls.Add(this.aStarRB);
-            this.Algorithms.Controls.Add(this.bfsRB);
-            this.Algorithms.Controls.Add(this.dfsRB);
-            this.Algorithms.Location = new System.Drawing.Point(7, 133);
-            this.Algorithms.Name = "Algorithms";
-            this.Algorithms.Size = new System.Drawing.Size(179, 112);
-            this.Algorithms.TabIndex = 7;
-            this.Algorithms.TabStop = false;
-            this.Algorithms.Text = "Algorithms";
-            // 
-            // dfsRB
-            // 
-            this.dfsRB.AutoSize = true;
-            this.dfsRB.Location = new System.Drawing.Point(7, 20);
-            this.dfsRB.Name = "dfsRB";
-            this.dfsRB.Size = new System.Drawing.Size(46, 17);
-            this.dfsRB.TabIndex = 0;
-            this.dfsRB.TabStop = true;
-            this.dfsRB.Text = "DFS";
-            this.dfsRB.UseVisualStyleBackColor = true;
-            // 
-            // bfsRB
-            // 
-            this.bfsRB.AutoSize = true;
-            this.bfsRB.Location = new System.Drawing.Point(102, 20);
-            this.bfsRB.Name = "bfsRB";
-            this.bfsRB.Size = new System.Drawing.Size(45, 17);
-            this.bfsRB.TabIndex = 1;
-            this.bfsRB.TabStop = true;
-            this.bfsRB.Text = "BFS";
-            this.bfsRB.UseVisualStyleBackColor = true;
-            // 
-            // aStarRB
-            // 
-            this.aStarRB.AutoSize = true;
-            this.aStarRB.Location = new System.Drawing.Point(6, 55);
-            this.aStarRB.Name = "aStarRB";
-            this.aStarRB.Size = new System.Drawing.Size(36, 17);
-            this.aStarRB.TabIndex = 2;
-            this.aStarRB.TabStop = true;
-            this.aStarRB.Text = "A*";
-            this.aStarRB.UseVisualStyleBackColor = true;
-            // 
-            // greedyRB
-            // 
-            this.greedyRB.AutoSize = true;
-            this.greedyRB.Location = new System.Drawing.Point(101, 55);
-            this.greedyRB.Name = "greedyRB";
-            this.greedyRB.Size = new System.Drawing.Size(59, 17);
-            this.greedyRB.TabIndex = 3;
-            this.greedyRB.TabStop = true;
-            this.greedyRB.Text = "Greedy";
-            this.greedyRB.UseVisualStyleBackColor = true;
-            // 
-            // dijkstraRB
-            // 
-            this.dijkstraRB.AutoSize = true;
-            this.dijkstraRB.Location = new System.Drawing.Point(7, 89);
-            this.dijkstraRB.Name = "dijkstraRB";
-            this.dijkstraRB.Size = new System.Drawing.Size(60, 17);
-            this.dijkstraRB.TabIndex = 4;
-            this.dijkstraRB.TabStop = true;
-            this.dijkstraRB.Text = "Dijkstra";
-            this.dijkstraRB.UseVisualStyleBackColor = true;
-            // 
-            // solveMazeBtn
-            // 
-            this.solveMazeBtn.BackColor = System.Drawing.Color.SpringGreen;
-            this.solveMazeBtn.Location = new System.Drawing.Point(6, 251);
-            this.solveMazeBtn.Name = "solveMazeBtn";
-            this.solveMazeBtn.Size = new System.Drawing.Size(180, 23);
-            this.solveMazeBtn.TabIndex = 8;
-            this.solveMazeBtn.Text = "Solve Maze";
-            this.solveMazeBtn.UseVisualStyleBackColor = false;
-            // 
-            // trackBar1
-            // 
-            this.trackBar1.Location = new System.Drawing.Point(7, 299);
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(171, 45);
-            this.trackBar1.TabIndex = 9;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(60, 283);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(87, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Animation Speed";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "# of rows (5-83):";
             // 
             // groupBox3
             // 
@@ -266,7 +267,7 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Legend";
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -275,13 +276,13 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Form1";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.Algorithms.ResumeLayout(false);
             this.Algorithms.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
