@@ -21,17 +21,17 @@ namespace MazeSolverV1_0
         int mSquareSzie;
         int mPaddingTop = 20;
         int mPaddingLeft = 10;
-        int mInitGridSize = 20;
+        int mInitGridSize = 10;
         private Dictionary<string, string> mFileNames = new Dictionary<string, string>();
         public static bool dfs, bfs, aStar, greedy, dijkstra;
 
-        public static int  INFINITY = Int32.MaxValue; // The representation of the infinite
-        public static int  EMPTY = 0;  // empty cell
-        public static int  OBST = 1;  // cell with obstacle
-        public static int  START = 2;  // the position of the robot
-        public static int  TARGET = 3;  // the position of the target
-        public static int  FRONTIER = 4;  // cells that form the frontier (OPEN SET)
-        public static int  CLOSED = 5;  // cells that form the CLOSED SET
+        public static int INFINITY = Int32.MaxValue; // The representation of the infinite
+        public static int EMPTY = 0;  // empty cell
+        public static int OBST = 1;  // cell with obstacle
+        public static int START = 2;  // the position of the robot
+        public static int TARGET = 3;  // the position of the target
+        public static int FRONTIER = 4;  // cells that form the frontier (OPEN SET)
+        public static int CLOSED = 5;  // cells that form the CLOSED SET
         public static int ROUTE = 6;  // cells that form the robot-to-target path
 
         // Messages to the user
@@ -59,17 +59,16 @@ namespace MazeSolverV1_0
             {
 
                 this.mSource = dialog.SelectedPath;
-                
+
                 labelSourceLink.Text = this.mSource;
 
-                
+
                 this.fileSystemWatcherSource.Path = this.mSource;
                 this.fileSystemWatcherSource.EnableRaisingEvents = true;
                 this._readFiles();
                 this.lbSource.Items.Clear();
                 foreach (string name in this.mFileNames.Keys)
                     this.lbSource.Items.Add(name);
-                this.mIsDestOK = true;
             }
         }
 
@@ -99,7 +98,7 @@ namespace MazeSolverV1_0
 
         public PictureBox[,] mazeTiles;
         //private MyMaze maze;
-       
+
 
         private void dfsRB_CheckedChanged(object sender, EventArgs e)
         {
@@ -139,11 +138,11 @@ namespace MazeSolverV1_0
             {
                 for (int j = 0; j < mCols; j++)
                 {
-                    if (i==0 && j==mCols-1)
+                    if (i == 0 && j == mCols - 1)
                     {
-                        this.mMaze[i, j] = new Cell(i, j,START);
+                        this.mMaze[i, j] = new Cell(i, j, START);
                     }
-                    else if(i == mRows-1 && j == 0)
+                    else if (i == mRows - 1 && j == 0)
                     {
                         this.mMaze[i, j] = new Cell(i, j, TARGET);
                     }
@@ -151,26 +150,29 @@ namespace MazeSolverV1_0
                     {
                         this.mMaze[i, j] = new Cell(i, j);
                     }
-                        
-                    
+
+
                 }
 
             }
+            this.ConnectGraph();
         }
 
         public void Repaint()
         {
-            int gridWidth = this.MazeGridGB.Size.Width-25;
+            int gridWidth = this.MazeGridGB.Size.Width - 25;
             this.mSquareSzie = gridWidth / this.mRows;
             MazeGridGB.Controls.Clear();
             for (int i = 0; i < mRows; i++)
             {
                 for (int j = 0; j < mCols; j++)
                 {
-                    int xPosition = (i * mSquareSzie) + this.mPaddingLeft; //13 is padding from left
-                    int yPosition = (j * mSquareSzie) + this.mPaddingTop; //45 is padding from top
+                    int xPosition = (j * mSquareSzie) + this.mPaddingLeft; 
+                    int yPosition = (i * mSquareSzie) + this.mPaddingTop; 
                     this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSzie, mSquareSzie);
-                    
+                    Label lbl = new Label();
+                    lbl.Text = i + "," + j;
+                    this.mMaze[i, j].box.Controls.Add(lbl);
 
 
                     if (this.mMaze[i, j].type == EMPTY)
@@ -213,41 +215,95 @@ namespace MazeSolverV1_0
 
         public void GenerateMazeFromFile(string path)
         {
-            var firstLine = File.ReadLines(path).First();
-            List<string> size = firstLine.Split('x').ToList();
-            this.mRows = Int32.Parse(size[0]);
-            this.mCols = Int32.Parse(size[1]);
-            this.mMaze = new Cell[this.mRows, this.mCols];
-            var lines = File.ReadLines(path).Skip(1);
-            int iCounter = 0;
-            foreach (var line in lines)
+            try
             {
-                int jCounter = 0;
-                List<string> characters = line.Split(',').ToList();
-                foreach (var singleChar in characters)
+                var firstLine = File.ReadLines(path).First();
+                List<string> size = firstLine.Split('x').ToList();
+                this.mRows = Int32.Parse(size[0]);
+                this.mCols = Int32.Parse(size[1]);
+                this.rowsTB.Text = this.mRows.ToString();
+                this.colsTB.Text = this.mCols.ToString();
+                this.mMaze = new Cell[this.mRows, this.mCols];
+                var lines = File.ReadLines(path).Skip(1);
+                int iCounter = 0;
+                foreach (var line in lines)
                 {
-                    if(singleChar=="x")
+                    int jCounter = 0;
+                    List<string> characters = line.Split(',').ToList();
+                    foreach (var singleChar in characters)
                     {
-                        this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, OBST);
+                        if (singleChar == "x")
+                        {
+                            this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, OBST);
+                        }
+                        else if (singleChar == "_")
+                        {
+                            this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, EMPTY);
+                        }
+                        else if (singleChar == "s")
+                        {
+                            this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, START);
+                        }
+                        else if (singleChar == "t")
+                        {
+                            this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, TARGET);
+                        }
+                        jCounter++;
+
                     }
-                    else if (singleChar == "_")
+                    iCounter++;
+                }
+                this.ConnectGraph();
+                this.Repaint();
+            }
+            catch(Exception ex)
+            {
+
+            }
+           
+        }
+
+        private void ConnectGraph()
+        {
+            for (int i = 0; i < mRows; i++)
+            {
+                for (int j = 0; j < mCols; j++)
+                {
+                    this.mMaze[i, j].neighbors.Clear();
+                    if (this.CheckIfFree(i,j))
                     {
-                        this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, EMPTY);
+                        
+                        if (this.CheckIfFree(i + 1, j))
+                        {
+                            this.mMaze[i, j].neighbors.Add(this.mMaze[i + 1, j]);
+                        }
+                        if (this.CheckIfFree(i - 1, j))
+                        {
+                            this.mMaze[i, j].neighbors.Add(this.mMaze[i - 1, j]);
+                        }
+                        if (this.CheckIfFree(i, j + 1))
+                        {
+                            this.mMaze[i, j].neighbors.Add(this.mMaze[i, j + 1]);
+                        }
+                        if (this.CheckIfFree(i, j - 1))
+                        {
+                            this.mMaze[i, j].neighbors.Add(this.mMaze[i, j - 1]);
+                        }
                     }
-                    else if (singleChar == "s")
-                    {
-                        this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, START);
-                    }
-                    else if (singleChar == "t")
-                    {
-                        this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, TARGET);
-                    }
-                    jCounter++;
+                    
 
                 }
-                iCounter++;
             }
-            this.Repaint();
+        }
+
+        private bool CheckIfFree(int i, int j)
+        {
+            if (i < 0 || j < 0 || i >= this.mRows || j >= this.mCols)
+                return false;
+            if (this.mMaze[i, j].type != OBST)
+                return true;
+            else
+                return false;
         }
 
         private void PictureBox_Click(object sender, EventArgs e)
@@ -256,11 +312,13 @@ namespace MazeSolverV1_0
             {
                 ((PictureBox)sender).BackColor = Color.Black;
             }
-            else
+            else if (((PictureBox)sender).BackColor == Color.Black)
             {
                 ((PictureBox)sender).BackColor = Color.White;
             }
         }
+
+       
 
         private class Cell
         {
@@ -292,6 +350,7 @@ namespace MazeSolverV1_0
                 this.box.BackColor = Color.White;
                 this.wall = false;
                 this.open = true;
+                this.neighbors = new List<Cell>();
             }
             public Cell(int row, int col, int type)
             {
@@ -301,6 +360,7 @@ namespace MazeSolverV1_0
                 this.box = new PictureBox();
                 this.wall = false;
                 this.open = true;
+                this.neighbors = new List<Cell>();
             }
         }
 
