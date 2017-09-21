@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.MazeGridGB = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
@@ -49,20 +49,28 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.outputMsgLabel = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.labelSourceLink = new System.Windows.Forms.Label();
+            this.SourcePathBtn = new System.Windows.Forms.Button();
+            this.labelSourcePath = new System.Windows.Forms.Label();
+            this.lbSource = new System.Windows.Forms.ListBox();
+            this.fileSystemWatcherSource = new System.IO.FileSystemWatcher();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.Algorithms.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcherSource)).BeginInit();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // MazeGridGB
             // 
-            this.groupBox1.Location = new System.Drawing.Point(13, 13);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(392, 350);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Maze Grid";
+            this.MazeGridGB.Location = new System.Drawing.Point(13, 13);
+            this.MazeGridGB.Name = "MazeGridGB";
+            this.MazeGridGB.Size = new System.Drawing.Size(350, 350);
+            this.MazeGridGB.TabIndex = 0;
+            this.MazeGridGB.TabStop = false;
+            this.MazeGridGB.Text = "Maze Grid";
             // 
             // groupBox2
             // 
@@ -77,7 +85,7 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.rowsTB);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(424, 13);
+            this.groupBox2.Location = new System.Drawing.Point(369, 13);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(192, 350);
             this.groupBox2.TabIndex = 1;
@@ -197,6 +205,7 @@
             this.clearBtn.TabIndex = 5;
             this.clearBtn.Text = "Clear";
             this.clearBtn.UseVisualStyleBackColor = true;
+            this.clearBtn.Click += new System.EventHandler(this.clearBtn_Click);
             // 
             // newGridBtn
             // 
@@ -206,6 +215,7 @@
             this.newGridBtn.TabIndex = 4;
             this.newGridBtn.Text = "New Grid";
             this.newGridBtn.UseVisualStyleBackColor = true;
+            this.newGridBtn.Click += new System.EventHandler(this.newGridBtn_Click);
             // 
             // colsTB
             // 
@@ -244,7 +254,7 @@
             this.groupBox3.Controls.Add(this.outputMsgLabel);
             this.groupBox3.Location = new System.Drawing.Point(13, 369);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(392, 85);
+            this.groupBox3.Size = new System.Drawing.Size(350, 85);
             this.groupBox3.TabIndex = 12;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Output";
@@ -260,22 +270,80 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Location = new System.Drawing.Point(416, 369);
+            this.groupBox4.Location = new System.Drawing.Point(369, 369);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(200, 85);
+            this.groupBox4.Size = new System.Drawing.Size(192, 85);
             this.groupBox4.TabIndex = 13;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Legend";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.labelSourceLink);
+            this.groupBox5.Controls.Add(this.SourcePathBtn);
+            this.groupBox5.Controls.Add(this.labelSourcePath);
+            this.groupBox5.Controls.Add(this.lbSource);
+            this.groupBox5.Location = new System.Drawing.Point(568, 13);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(206, 441);
+            this.groupBox5.TabIndex = 14;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Files Preview";
+            // 
+            // labelSourceLink
+            // 
+            this.labelSourceLink.AutoSize = true;
+            this.labelSourceLink.Location = new System.Drawing.Point(3, 44);
+            this.labelSourceLink.Name = "labelSourceLink";
+            this.labelSourceLink.Size = new System.Drawing.Size(69, 13);
+            this.labelSourceLink.TabIndex = 11;
+            this.labelSourceLink.Text = "Not Selected";
+            // 
+            // SourcePathBtn
+            // 
+            this.SourcePathBtn.Location = new System.Drawing.Point(78, 13);
+            this.SourcePathBtn.Name = "SourcePathBtn";
+            this.SourcePathBtn.Size = new System.Drawing.Size(75, 23);
+            this.SourcePathBtn.TabIndex = 9;
+            this.SourcePathBtn.Text = "Choose...";
+            this.SourcePathBtn.UseVisualStyleBackColor = true;
+            this.SourcePathBtn.Click += new System.EventHandler(this.SourcePathBtn_Click);
+            // 
+            // labelSourcePath
+            // 
+            this.labelSourcePath.AutoSize = true;
+            this.labelSourcePath.Location = new System.Drawing.Point(6, 20);
+            this.labelSourcePath.Name = "labelSourcePath";
+            this.labelSourcePath.Size = new System.Drawing.Size(66, 13);
+            this.labelSourcePath.TabIndex = 7;
+            this.labelSourcePath.Text = "SourcePath:";
+            // 
+            // lbSource
+            // 
+            this.lbSource.FormattingEnabled = true;
+            this.lbSource.Location = new System.Drawing.Point(6, 78);
+            this.lbSource.Name = "lbSource";
+            this.lbSource.Size = new System.Drawing.Size(194, 355);
+            this.lbSource.TabIndex = 1;
+            this.lbSource.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbSource_MouseDoubleClick);
+            // 
+            // fileSystemWatcherSource
+            // 
+            this.fileSystemWatcherSource.EnableRaisingEvents = true;
+            this.fileSystemWatcherSource.SynchronizingObject = this;
+            this.fileSystemWatcherSource.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Created);
+            this.fileSystemWatcherSource.Deleted += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Deleted);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(632, 467);
+            this.ClientSize = new System.Drawing.Size(780, 461);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.MazeGridGB);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.groupBox2.ResumeLayout(false);
@@ -285,13 +353,16 @@
             this.Algorithms.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcherSource)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox MazeGridGB;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TrackBar trackBar1;
@@ -312,6 +383,12 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label outputMsgLabel;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label labelSourceLink;
+        private System.Windows.Forms.Button SourcePathBtn;
+        private System.Windows.Forms.Label labelSourcePath;
+        private System.Windows.Forms.ListBox lbSource;
+        private System.IO.FileSystemWatcher fileSystemWatcherSource;
     }
 }
 
