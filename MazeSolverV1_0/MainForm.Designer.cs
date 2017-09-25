@@ -48,6 +48,8 @@
             this.rowsTB = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.KoordinatesLabel = new System.Windows.Forms.Label();
+            this.timeElapsedLabel = new System.Windows.Forms.Label();
             this.outputMsgLabel = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -56,8 +58,6 @@
             this.labelSourcePath = new System.Windows.Forms.Label();
             this.lbSource = new System.Windows.Forms.ListBox();
             this.fileSystemWatcherSource = new System.IO.FileSystemWatcher();
-            this.timeElapsedLabel = new System.Windows.Forms.Label();
-            this.KoordinatesLabel = new System.Windows.Forms.Label();
             this.MazeGridGB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mazePictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -87,6 +87,7 @@
             this.mazePictureBox.TabStop = false;
             this.mazePictureBox.Visible = false;
             this.mazePictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mazePictureBox_MouseClick);
+            this.mazePictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mazePictureBox_MouseDown);
             // 
             // groupBox2
             // 
@@ -279,6 +280,22 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Output";
             // 
+            // KoordinatesLabel
+            // 
+            this.KoordinatesLabel.AutoSize = true;
+            this.KoordinatesLabel.Location = new System.Drawing.Point(242, 51);
+            this.KoordinatesLabel.Name = "KoordinatesLabel";
+            this.KoordinatesLabel.Size = new System.Drawing.Size(0, 13);
+            this.KoordinatesLabel.TabIndex = 14;
+            // 
+            // timeElapsedLabel
+            // 
+            this.timeElapsedLabel.AutoSize = true;
+            this.timeElapsedLabel.Location = new System.Drawing.Point(6, 52);
+            this.timeElapsedLabel.Name = "timeElapsedLabel";
+            this.timeElapsedLabel.Size = new System.Drawing.Size(0, 13);
+            this.timeElapsedLabel.TabIndex = 13;
+            // 
             // outputMsgLabel
             // 
             this.outputMsgLabel.AutoSize = true;
@@ -352,22 +369,6 @@
             this.fileSystemWatcherSource.SynchronizingObject = this;
             this.fileSystemWatcherSource.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Created);
             this.fileSystemWatcherSource.Deleted += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Deleted);
-            // 
-            // timeElapsedLabel
-            // 
-            this.timeElapsedLabel.AutoSize = true;
-            this.timeElapsedLabel.Location = new System.Drawing.Point(6, 52);
-            this.timeElapsedLabel.Name = "timeElapsedLabel";
-            this.timeElapsedLabel.Size = new System.Drawing.Size(0, 13);
-            this.timeElapsedLabel.TabIndex = 13;
-            // 
-            // KoordinatesLabel
-            // 
-            this.KoordinatesLabel.AutoSize = true;
-            this.KoordinatesLabel.Location = new System.Drawing.Point(242, 51);
-            this.KoordinatesLabel.Name = "KoordinatesLabel";
-            this.KoordinatesLabel.Size = new System.Drawing.Size(0, 13);
-            this.KoordinatesLabel.TabIndex = 14;
             // 
             // MainForm
             // 

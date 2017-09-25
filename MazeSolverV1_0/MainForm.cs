@@ -18,7 +18,7 @@ namespace MazeSolverV1_0
         private Cell[,] mMaze;
         int mRows;
         int mCols;
-        int mSquareSzie;
+        int mSquareSize;
         int mPaddingTop = 20;
         int mPaddingLeft = 10;
         int mInitGridSize = 10;
@@ -27,6 +27,9 @@ namespace MazeSolverV1_0
 
         public Cell mStartCell;
         public Cell mTargetCell;
+
+        private bool mIsStartOk=true;
+        private bool mIsTargetOk=true;
 
         public static int INFINITY = Int32.MaxValue; // The representation of the infinite
         public static int EMPTY = 0;  // empty cell
@@ -181,8 +184,8 @@ namespace MazeSolverV1_0
         {
             System.Threading.Thread.Sleep(delay);
             int gridWidth = this.mazePictureBox.Width - 25;
-            this.mSquareSzie = gridWidth / this.mRows;
-            var bmp = new Bitmap(this.mazePictureBox.Width+mSquareSzie, this.mazePictureBox.Height+mSquareSzie, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            this.mSquareSize = gridWidth / this.mRows;
+            var bmp = new Bitmap(this.mazePictureBox.Width+mSquareSize, this.mazePictureBox.Height+mSquareSize, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             using (var g = Graphics.FromImage(bmp))
             using (var p = new Pen(Color.Black))
             using (var b = new SolidBrush(Color.White))
@@ -191,9 +194,9 @@ namespace MazeSolverV1_0
                 {
                     for (int j = 0; j < mCols; j++)
                     {
-                        int xPosition = (j * mSquareSzie) + this.mPaddingLeft;
-                        int yPosition = (i * mSquareSzie) + this.mPaddingTop;
-                        Rectangle rect = new Rectangle(xPosition, yPosition, mSquareSzie, mSquareSzie);
+                        int xPosition = (j * mSquareSize) + this.mPaddingLeft;
+                        int yPosition = (i * mSquareSize) + this.mPaddingTop;
+                        Rectangle rect = new Rectangle(xPosition, yPosition, mSquareSize, mSquareSize);
                         //this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSzie, mSquareSzie);
                         //Label lbl = new Label();
                         //lbl.Text = i + "," + j;
@@ -264,15 +267,15 @@ namespace MazeSolverV1_0
         public void Repaint()
         {
             int gridWidth = this.MazeGridGB.Size.Width - 25;
-            this.mSquareSzie = gridWidth / this.mRows;
+            this.mSquareSize = gridWidth / this.mRows;
             MazeGridGB.Controls.Clear();
             for (int i = 0; i < mRows; i++)
             {
                 for (int j = 0; j < mCols; j++)
                 {
-                    int xPosition = (j * mSquareSzie) + this.mPaddingLeft; 
-                    int yPosition = (i * mSquareSzie) + this.mPaddingTop; 
-                    this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSzie, mSquareSzie);
+                    int xPosition = (j * mSquareSize) + this.mPaddingLeft; 
+                    int yPosition = (i * mSquareSize) + this.mPaddingTop; 
+                    this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSize, mSquareSize);
                     //Label lbl = new Label();
                     //lbl.Text = i + "," + j;
                     //this.mMaze[i, j].box.Controls.Add(lbl);
@@ -427,7 +430,64 @@ namespace MazeSolverV1_0
 
         private void mazePictureBox_MouseClick(object sender, MouseEventArgs e)
         {
+            int xPosition = (e.X - 10) / this.mSquareSize;
+            int yPosition = (e.Y - 20) / this.mSquareSize;
+            if(xPosition>=0 && xPosition<this.mCols && yPosition >=0 && yPosition < this.mRows)
+            {
+                if(this.mMaze[yPosition, xPosition].type == START && this.mIsTargetOk)
+                {
+                    this.mMaze[yPosition, xPosition].type = EMPTY;
+                    this.mIsStartOk = false;
+                    this.RepaintWithBMP(0);
+                }
+                else if(!this.mIsStartOk)
+                {
+                    this.mMaze[yPosition, xPosition].type = START;
+                    this.mIsStartOk = true;
+                    this.mStartCell = this.mMaze[yPosition, xPosition];
+                    this.RepaintWithBMP(0);
+                }
+                else if (!this.mIsTargetOk)
+                {
+                    this.mMaze[yPosition, xPosition].type = TARGET;
+                    this.mIsTargetOk = true;
+                    this.mTargetCell = this.mMaze[yPosition, xPosition];
+                    this.RepaintWithBMP(0);
+                }
+                else if(this.mMaze[yPosition, xPosition].type == EMPTY)
+                {
+                    this.mMaze[yPosition, xPosition].type = OBST;
+                    this.RepaintWithBMP(0);
+                }
+                else if (this.mMaze[yPosition, xPosition].type == OBST)
+                {
+                    this.mMaze[yPosition, xPosition].type = EMPTY;
+                    this.RepaintWithBMP(0);
+                }
+                else if (this.mMaze[yPosition, xPosition].type == TARGET && this.mIsStartOk)
+                {
+                    this.mMaze[yPosition, xPosition].type = EMPTY;
+                    this.mIsTargetOk = false;
+                    this.RepaintWithBMP(0);
+                }
+
+                this.ConnectGraph();
+            }
+            
             this.KoordinatesLabel.Text = String.Format("X: {0}; Y:{1} ", e.X, e.Y);
+        }
+
+        private void mazePictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            //int xPosition = (e.X - 10) / this.mSquareSize;
+            //int yPosition = (e.Y - 20) / this.mSquareSize;
+            //if (xPosition >= 0 && xPosition < this.mCols && yPosition >= 0 && yPosition < this.mRows)
+            //{
+            //    this.mMaze[yPosition, xPosition].type = TARGET;
+            //    this.RepaintWithBMP(0);
+            //}
+
+            //this.KoordinatesLabel.Text = String.Format("X: {0}; Y:{1} ", e.X, e.Y);
         }
 
         private void PictureBox_Click(object sender, EventArgs e)
