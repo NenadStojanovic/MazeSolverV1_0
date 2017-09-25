@@ -29,9 +29,10 @@
         private void InitializeComponent()
         {
             this.MazeGridGB = new System.Windows.Forms.GroupBox();
+            this.mazePictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.DelayTrackBar = new System.Windows.Forms.TrackBar();
             this.solveMazeBtn = new System.Windows.Forms.Button();
             this.Algorithms = new System.Windows.Forms.GroupBox();
             this.dijkstraRB = new System.Windows.Forms.RadioButton();
@@ -55,8 +56,12 @@
             this.labelSourcePath = new System.Windows.Forms.Label();
             this.lbSource = new System.Windows.Forms.ListBox();
             this.fileSystemWatcherSource = new System.IO.FileSystemWatcher();
+            this.timeElapsedLabel = new System.Windows.Forms.Label();
+            this.KoordinatesLabel = new System.Windows.Forms.Label();
+            this.MazeGridGB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mazePictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DelayTrackBar)).BeginInit();
             this.Algorithms.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -65,6 +70,7 @@
             // 
             // MazeGridGB
             // 
+            this.MazeGridGB.Controls.Add(this.mazePictureBox);
             this.MazeGridGB.Location = new System.Drawing.Point(13, 13);
             this.MazeGridGB.Name = "MazeGridGB";
             this.MazeGridGB.Size = new System.Drawing.Size(350, 350);
@@ -72,10 +78,20 @@
             this.MazeGridGB.TabStop = false;
             this.MazeGridGB.Text = "Maze Grid";
             // 
+            // mazePictureBox
+            // 
+            this.mazePictureBox.Location = new System.Drawing.Point(6, 20);
+            this.mazePictureBox.Name = "mazePictureBox";
+            this.mazePictureBox.Size = new System.Drawing.Size(325, 325);
+            this.mazePictureBox.TabIndex = 0;
+            this.mazePictureBox.TabStop = false;
+            this.mazePictureBox.Visible = false;
+            this.mazePictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mazePictureBox_MouseClick);
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.trackBar1);
+            this.groupBox2.Controls.Add(this.DelayTrackBar);
             this.groupBox2.Controls.Add(this.solveMazeBtn);
             this.groupBox2.Controls.Add(this.Algorithms);
             this.groupBox2.Controls.Add(this.generateMazeBtn);
@@ -101,12 +117,13 @@
             this.label3.TabIndex = 10;
             this.label3.Text = "Animation Speed";
             // 
-            // trackBar1
+            // DelayTrackBar
             // 
-            this.trackBar1.Location = new System.Drawing.Point(7, 299);
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(171, 45);
-            this.trackBar1.TabIndex = 9;
+            this.DelayTrackBar.Location = new System.Drawing.Point(7, 299);
+            this.DelayTrackBar.Maximum = 100;
+            this.DelayTrackBar.Name = "DelayTrackBar";
+            this.DelayTrackBar.Size = new System.Drawing.Size(171, 45);
+            this.DelayTrackBar.TabIndex = 9;
             // 
             // solveMazeBtn
             // 
@@ -117,6 +134,7 @@
             this.solveMazeBtn.TabIndex = 8;
             this.solveMazeBtn.Text = "Solve Maze";
             this.solveMazeBtn.UseVisualStyleBackColor = false;
+            this.solveMazeBtn.Click += new System.EventHandler(this.solveMazeBtn_Click);
             // 
             // Algorithms
             // 
@@ -251,6 +269,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.KoordinatesLabel);
+            this.groupBox3.Controls.Add(this.timeElapsedLabel);
             this.groupBox3.Controls.Add(this.outputMsgLabel);
             this.groupBox3.Location = new System.Drawing.Point(13, 369);
             this.groupBox3.Name = "groupBox3";
@@ -262,11 +282,10 @@
             // outputMsgLabel
             // 
             this.outputMsgLabel.AutoSize = true;
-            this.outputMsgLabel.Location = new System.Drawing.Point(134, 42);
+            this.outputMsgLabel.Location = new System.Drawing.Point(6, 39);
             this.outputMsgLabel.Name = "outputMsgLabel";
-            this.outputMsgLabel.Size = new System.Drawing.Size(19, 13);
+            this.outputMsgLabel.Size = new System.Drawing.Size(0, 13);
             this.outputMsgLabel.TabIndex = 12;
-            this.outputMsgLabel.Text = "***";
             // 
             // groupBox4
             // 
@@ -334,6 +353,22 @@
             this.fileSystemWatcherSource.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Created);
             this.fileSystemWatcherSource.Deleted += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Deleted);
             // 
+            // timeElapsedLabel
+            // 
+            this.timeElapsedLabel.AutoSize = true;
+            this.timeElapsedLabel.Location = new System.Drawing.Point(6, 52);
+            this.timeElapsedLabel.Name = "timeElapsedLabel";
+            this.timeElapsedLabel.Size = new System.Drawing.Size(0, 13);
+            this.timeElapsedLabel.TabIndex = 13;
+            // 
+            // KoordinatesLabel
+            // 
+            this.KoordinatesLabel.AutoSize = true;
+            this.KoordinatesLabel.Location = new System.Drawing.Point(242, 51);
+            this.KoordinatesLabel.Name = "KoordinatesLabel";
+            this.KoordinatesLabel.Size = new System.Drawing.Size(0, 13);
+            this.KoordinatesLabel.TabIndex = 14;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -346,9 +381,11 @@
             this.Controls.Add(this.MazeGridGB);
             this.Name = "MainForm";
             this.Text = "Form1";
+            this.MazeGridGB.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.mazePictureBox)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DelayTrackBar)).EndInit();
             this.Algorithms.ResumeLayout(false);
             this.Algorithms.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -365,7 +402,7 @@
         private System.Windows.Forms.GroupBox MazeGridGB;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.TrackBar DelayTrackBar;
         private System.Windows.Forms.Button solveMazeBtn;
         private System.Windows.Forms.GroupBox Algorithms;
         private System.Windows.Forms.RadioButton dijkstraRB;
@@ -389,6 +426,9 @@
         private System.Windows.Forms.Label labelSourcePath;
         private System.Windows.Forms.ListBox lbSource;
         private System.IO.FileSystemWatcher fileSystemWatcherSource;
+        private System.Windows.Forms.PictureBox mazePictureBox;
+        private System.Windows.Forms.Label timeElapsedLabel;
+        private System.Windows.Forms.Label KoordinatesLabel;
     }
 }
 

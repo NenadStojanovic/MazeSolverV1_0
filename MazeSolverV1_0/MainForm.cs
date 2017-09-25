@@ -25,6 +25,9 @@ namespace MazeSolverV1_0
         private Dictionary<string, string> mFileNames = new Dictionary<string, string>();
         public static bool dfs, bfs, aStar, greedy, dijkstra;
 
+        public Cell mStartCell;
+        public Cell mTargetCell;
+
         public static int INFINITY = Int32.MaxValue; // The representation of the infinite
         public static int EMPTY = 0;  // empty cell
         public static int OBST = 1;  // cell with obstacle
@@ -48,7 +51,9 @@ namespace MazeSolverV1_0
             this.dfsRB.Checked = true;
             this.mMaze = new Cell[this.mRows, this.mCols];
             this.InitMaze();
-            this.Repaint();
+            this.RepaintWithBMP(0);
+            this.mStartCell = new Cell();
+            this.mTargetCell = new Cell();
 
 
         }
@@ -86,7 +91,11 @@ namespace MazeSolverV1_0
         private void fileSystemWatcherSource_Created(object sender, FileSystemEventArgs e)
         {
             if (!this.mFileNames.ContainsKey(e.FullPath))
-                this.mFileNames.Add(e.FullPath, Path.GetFileName(e.FullPath));
+            {
+                string[] path = e.FullPath.Split('\\');
+                this.mFileNames.Add(path.Last(), e.FullPath);
+            }
+                
             this.lbSource.Items.Add(Path.GetFileName(e.FullPath));
         }
 
@@ -95,11 +104,6 @@ namespace MazeSolverV1_0
             this.mFileNames.Remove(Path.GetFileName(e.FullPath));
             this.lbSource.Items.Remove(Path.GetFileName(e.FullPath));
         }
-
-        public PictureBox[,] mazeTiles;
-        //private MyMaze maze;
-
-
         private void dfsRB_CheckedChanged(object sender, EventArgs e)
         {
             dfs = dfsRB.Checked;
@@ -108,8 +112,23 @@ namespace MazeSolverV1_0
 
         private void clearBtn_Click(object sender, EventArgs e)
         {
-            this.InitMaze();
-            this.Repaint();
+            //this.InitMaze();
+            for (int i = 0; i < this.mRows; i++)
+            {
+                for (int j = 0; j < this.mCols; j++)
+                {
+                    if(this.mMaze[i,j].type == FRONTIER || this.mMaze[i, j].type == ROUTE || this.mMaze[i, j].type == CLOSED )
+                    {
+                        this.mMaze[i, j].type = EMPTY;
+                        this.mMaze[i, j].isVisited = false;
+                    }
+                    else if(this.mMaze[i, j].type == START || this.mMaze[i, j].type == TARGET)
+                    {
+                        this.mMaze[i, j].isVisited = false;
+                    }
+                }
+            }
+            this.RepaintWithBMP(0);
         }
 
         private void newGridBtn_Click(object sender, EventArgs e)
@@ -118,7 +137,7 @@ namespace MazeSolverV1_0
             this.mCols = Int32.Parse(this.colsTB.Text);
             this.mMaze = new Cell[this.mRows, this.mCols];
             this.InitMaze();
-            this.Repaint();
+            this.RepaintWithBMP(0);
         }
 
         private void lbSource_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -158,6 +177,90 @@ namespace MazeSolverV1_0
             this.ConnectGraph();
         }
 
+        public void RepaintWithBMP(int delay)
+        {
+            System.Threading.Thread.Sleep(delay);
+            int gridWidth = this.mazePictureBox.Width - 25;
+            this.mSquareSzie = gridWidth / this.mRows;
+            var bmp = new Bitmap(this.mazePictureBox.Width+mSquareSzie, this.mazePictureBox.Height+mSquareSzie, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            using (var g = Graphics.FromImage(bmp))
+            using (var p = new Pen(Color.Black))
+            using (var b = new SolidBrush(Color.White))
+            {
+                for (int i = 0; i < mRows; i++)
+                {
+                    for (int j = 0; j < mCols; j++)
+                    {
+                        int xPosition = (j * mSquareSzie) + this.mPaddingLeft;
+                        int yPosition = (i * mSquareSzie) + this.mPaddingTop;
+                        Rectangle rect = new Rectangle(xPosition, yPosition, mSquareSzie, mSquareSzie);
+                        //this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSzie, mSquareSzie);
+                        //Label lbl = new Label();
+                        //lbl.Text = i + "," + j;
+                        //this.mMaze[i, j].box.Controls.Add(lbl);
+
+
+                        if (this.mMaze[i, j].type == EMPTY)
+                        {
+                            b.Color = Color.White;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.White;
+                            g.DrawRectangle(p, rect);
+
+                        }
+                        else if (this.mMaze[i, j].type == START)
+                        {
+                            b.Color = Color.Red;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.Red;
+                            g.DrawRectangle(p, rect);
+                        }
+                        else if (this.mMaze[i, j].type == TARGET)
+                        {
+                            b.Color = Color.Green;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.Green;
+                            g.DrawRectangle(p, rect);
+                        }
+                        else if (this.mMaze[i, j].type == OBST)
+                        {
+                            b.Color = Color.Black;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.Black;
+                            g.DrawRectangle(p, rect);
+                        }
+                        else if (this.mMaze[i, j].type == FRONTIER)
+                        {
+                            b.Color = Color.Blue;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.Blue;
+                            g.DrawRectangle(p, rect);
+                        }
+                        else if (this.mMaze[i, j].type == CLOSED)
+                        {
+                            b.Color = Color.Cyan;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.Cyan;
+                            g.DrawRectangle(p, rect);
+                        }
+                        else if (this.mMaze[i, j].type == ROUTE)
+                        {
+                            b.Color = Color.Yellow;
+                            g.FillRectangle(b, rect);
+                            p.Color = Color.Yellow;
+                            g.DrawRectangle(p, rect);
+                        }
+                        
+                    }
+
+                }
+            }
+            this.mazePictureBox.Visible = true;
+            this.mazePictureBox.Image = bmp;
+            this.mazePictureBox.BringToFront();
+            this.mazePictureBox.Refresh();
+        }
+
         public void Repaint()
         {
             int gridWidth = this.MazeGridGB.Size.Width - 25;
@@ -170,9 +273,9 @@ namespace MazeSolverV1_0
                     int xPosition = (j * mSquareSzie) + this.mPaddingLeft; 
                     int yPosition = (i * mSquareSzie) + this.mPaddingTop; 
                     this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSzie, mSquareSzie);
-                    Label lbl = new Label();
-                    lbl.Text = i + "," + j;
-                    this.mMaze[i, j].box.Controls.Add(lbl);
+                    //Label lbl = new Label();
+                    //lbl.Text = i + "," + j;
+                    //this.mMaze[i, j].box.Controls.Add(lbl);
 
 
                     if (this.mMaze[i, j].type == EMPTY)
@@ -242,11 +345,13 @@ namespace MazeSolverV1_0
                         }
                         else if (singleChar == "s")
                         {
-                            this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, START);
+                            this.mStartCell = new Cell(iCounter, jCounter, START);
+                            this.mMaze[iCounter, jCounter] = this.mStartCell;
                         }
                         else if (singleChar == "t")
                         {
-                            this.mMaze[iCounter, jCounter] = new Cell(iCounter, jCounter, TARGET);
+                            this.mTargetCell = new Cell(iCounter, jCounter, TARGET);
+                            this.mMaze[iCounter, jCounter] = this.mTargetCell;
                         }
                         jCounter++;
 
@@ -254,7 +359,7 @@ namespace MazeSolverV1_0
                     iCounter++;
                 }
                 this.ConnectGraph();
-                this.Repaint();
+                this.RepaintWithBMP(0);
             }
             catch(Exception ex)
             {
@@ -296,6 +401,20 @@ namespace MazeSolverV1_0
             }
         }
 
+        private void solveMazeBtn_Click(object sender, EventArgs e)
+        {
+            if(bfsRB.Checked)
+            {
+                this.RunBFS();
+            }
+            else if (dfsRB.Checked)
+            {
+                this.RunDFS();
+            }
+        }
+
+
+
         private bool CheckIfFree(int i, int j)
         {
             if (i < 0 || j < 0 || i >= this.mRows || j >= this.mCols)
@@ -304,6 +423,11 @@ namespace MazeSolverV1_0
                 return true;
             else
                 return false;
+        }
+
+        private void mazePictureBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            this.KoordinatesLabel.Text = String.Format("X: {0}; Y:{1} ", e.X, e.Y);
         }
 
         private void PictureBox_Click(object sender, EventArgs e)
@@ -318,15 +442,169 @@ namespace MazeSolverV1_0
             }
         }
 
-       
+        private void RunBFS()
+        {
+            try
+            {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                bool isSolution = false;
+                var q = new Queue<Cell>();
+                q.Enqueue(this.mStartCell);
+                int nodeCounter = 0;
+                Cell current = new Cell();
+                while (q.Count > 0)
+                {
+                    nodeCounter++;
+                    current = q.Dequeue();
+                    current.isVisited = true;
+                    //this.mMaze[current.x, current.y].box.BackColor =  Color.Cyan;
+                    if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
+                    {
+                        this.mMaze[current.x, current.y].type = CLOSED;
+                    }
 
-        private class Cell
+
+                    if (current.Equals(this.mTargetCell))
+                    {
+                        isSolution = true;
+                        break;
+                    }
+                    foreach (var n in current.neighbors)
+                    {
+                        if (!n.isVisited)
+                        {
+                            //this.mMaze[n.x, n.y].box.BackColor = Color.Blue;
+                            if (this.mMaze[n.x, n.y].type != TARGET && this.mMaze[n.x, n.y].type != START)
+                            {
+                                this.mMaze[n.x, n.y].type = FRONTIER;
+                            }
+                            n.prev = current;
+                            q.Enqueue(n);
+                        }
+
+                    }
+
+                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+
+                }
+                if (isSolution)
+                {
+                    int stepCounter = 0;
+                    while (current.prev != null)
+                    {
+                        stepCounter++;
+                        if (this.mMaze[current.prev.x, current.prev.y].type != START)
+                        {
+                            this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
+                            //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
+                        }
+
+                        current = current.prev;
+                    }
+                    this.RepaintWithBMP(0);
+                    string message = "Number of traversed nodes: " + nodeCounter + ", number of steps: " + stepCounter;
+                    this.outputMsgLabel.Text = message;
+                    watch.Stop();
+                    var elapsed = watch.ElapsedMilliseconds;
+                    this.timeElapsedLabel.Text = "Time elapsed: " + elapsed+"ms";
+                }
+                else
+                {
+                    string message = "There is no solution";
+                    this.outputMsgLabel.Text = message;
+                }
+            }
+            catch (Exception ex) { }
+            
+            
+
+        }
+
+        private void RunDFS()
+        {
+            try
+            {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                bool isSolution = false;
+                var s = new Stack<Cell>();
+                s.Push(this.mStartCell);
+                int nodeCounter = 0;
+                Cell current = new Cell();
+                while (s.Count > 0)
+                {
+                    nodeCounter++;
+                    current = s.Pop();
+                    current.isVisited = true;
+                    //this.mMaze[current.x, current.y].box.BackColor =  Color.Cyan;
+                    if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
+                    {
+                        this.mMaze[current.x, current.y].type = CLOSED;
+                    }
+
+
+                    if (current.Equals(this.mTargetCell))
+                    {
+                        isSolution = true;
+                        break;
+                    }
+                    foreach (var n in current.neighbors)
+                    {
+                        if (!n.isVisited)
+                        {
+                            //this.mMaze[n.x, n.y].box.BackColor = Color.Blue;
+                            if (this.mMaze[n.x, n.y].type != TARGET && this.mMaze[n.x, n.y].type != START)
+                            {
+                                this.mMaze[n.x, n.y].type = FRONTIER;
+                            }
+                            n.prev = current;
+                            s.Push(n);
+                        }
+
+                    }
+
+                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+
+                }
+                if (isSolution)
+                {
+                    int stepCounter = 0;
+                    while (current.prev != null)
+                    {
+                        stepCounter++;
+                        if (this.mMaze[current.prev.x, current.prev.y].type != START)
+                        {
+                            this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
+                            //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
+                        }
+
+                        current = current.prev;
+                    }
+                    this.RepaintWithBMP(0);
+                    string message = "Number of traversed nodes: " + nodeCounter + ", number of steps: " + stepCounter;
+                    this.outputMsgLabel.Text = message;
+                    watch.Stop();
+                    var elapsed = watch.ElapsedMilliseconds;
+                    this.timeElapsedLabel.Text = "Time elapsed: " + elapsed + "ms";
+                }
+                else
+                {
+                    string message = "There is no solution";
+                    this.outputMsgLabel.Text = message;
+                }
+            }
+            catch (Exception ex) { }
+
+
+
+        }
+
+        public class Cell
         {
             public int x;     //x cooridnates
             public int y;     //y cooridnates
             public int g;     // the value of the function g of A* and Greedy algorithms
             public int h;     // the value of the function h of A* and Greedy algorithms
-            public int f;     // the value of the function h of A* and Greedy algorithms
+            public int f;     // the value of the function f of A* and Greedy algorithms
             public int dist;  // the distance of the cell from the initial position of the robot
                       // Ie the label that updates the Dijkstra's algorithm
             public Cell prev; // Each state corresponds to a cell
@@ -336,10 +614,17 @@ namespace MazeSolverV1_0
             public List<Cell> neighbors = new List<Cell>();
             public bool wall;
             public bool open;
+            public bool isVisited;
 
             public PictureBox box;
             public int type;
             public int keyValue;
+
+            public Cell()
+            {
+                this.neighbors = new List<Cell>();
+                this.isVisited = false;
+            }
 
             public Cell(int row, int col)
             {
@@ -350,6 +635,7 @@ namespace MazeSolverV1_0
                 this.box.BackColor = Color.White;
                 this.wall = false;
                 this.open = true;
+                this.isVisited = false;
                 this.neighbors = new List<Cell>();
             }
             public Cell(int row, int col, int type)
@@ -360,7 +646,21 @@ namespace MazeSolverV1_0
                 this.box = new PictureBox();
                 this.wall = false;
                 this.open = true;
+                this.isVisited = false;
                 this.neighbors = new List<Cell>();
+            }
+
+            public override bool Equals(object obj)
+            {
+                Cell c = (Cell)obj;
+                if (this.x == c.x && this.y == c.y)
+                    return true;
+                else
+                    return false;
+            }
+            public override int GetHashCode()
+            {
+                return this.x + this.y * 256;
             }
         }
 
