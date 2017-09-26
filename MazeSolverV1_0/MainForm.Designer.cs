@@ -58,6 +58,8 @@
             this.labelSourcePath = new System.Windows.Forms.Label();
             this.lbSource = new System.Windows.Forms.ListBox();
             this.fileSystemWatcherSource = new System.IO.FileSystemWatcher();
+            this.KeyGB = new System.Windows.Forms.GroupBox();
+            this.KeyLabel = new System.Windows.Forms.Label();
             this.MazeGridGB.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mazePictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -66,6 +68,7 @@
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcherSource)).BeginInit();
+            this.KeyGB.SuspendLayout();
             this.SuspendLayout();
             // 
             // MazeGridGB
@@ -370,11 +373,31 @@
             this.fileSystemWatcherSource.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Created);
             this.fileSystemWatcherSource.Deleted += new System.IO.FileSystemEventHandler(this.fileSystemWatcherSource_Deleted);
             // 
+            // KeyGB
+            // 
+            this.KeyGB.Controls.Add(this.KeyLabel);
+            this.KeyGB.Location = new System.Drawing.Point(13, 461);
+            this.KeyGB.Name = "KeyGB";
+            this.KeyGB.Size = new System.Drawing.Size(760, 61);
+            this.KeyGB.TabIndex = 15;
+            this.KeyGB.TabStop = false;
+            this.KeyGB.Text = "Key";
+            // 
+            // KeyLabel
+            // 
+            this.KeyLabel.AutoSize = true;
+            this.KeyLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.KeyLabel.Location = new System.Drawing.Point(6, 20);
+            this.KeyLabel.Name = "KeyLabel";
+            this.KeyLabel.Size = new System.Drawing.Size(0, 20);
+            this.KeyLabel.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(780, 461);
+            this.ClientSize = new System.Drawing.Size(785, 534);
+            this.Controls.Add(this.KeyGB);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -394,6 +417,8 @@
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcherSource)).EndInit();
+            this.KeyGB.ResumeLayout(false);
+            this.KeyGB.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -430,6 +455,8 @@
         private System.Windows.Forms.PictureBox mazePictureBox;
         private System.Windows.Forms.Label timeElapsedLabel;
         private System.Windows.Forms.Label KoordinatesLabel;
+        private System.Windows.Forms.GroupBox KeyGB;
+        private System.Windows.Forms.Label KeyLabel;
     }
 }
 

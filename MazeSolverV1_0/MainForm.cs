@@ -28,6 +28,8 @@ namespace MazeSolverV1_0
         public Cell mStartCell;
         public Cell mTargetCell;
 
+        const int MUST_BE_LESS_THAN = 100000000;
+
         private bool mIsStartOk=true;
         private bool mIsTargetOk=true;
 
@@ -414,6 +416,14 @@ namespace MazeSolverV1_0
             {
                 this.RunDFS();
             }
+            else if (aStarRB.Checked)
+            {
+                this.RunAStarOrGreedy(true);
+            }
+            else if (greedyRB.Checked)
+            {
+                this.RunAStarOrGreedy(false);
+            }
         }
 
 
@@ -474,7 +484,7 @@ namespace MazeSolverV1_0
                 this.ConnectGraph();
             }
             
-            this.KoordinatesLabel.Text = String.Format("X: {0}; Y:{1} ", e.X, e.Y);
+            //this.KoordinatesLabel.Text = String.Format("X: {0}; Y:{1} ", e.X, e.Y);
         }
 
         private void mazePictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -550,6 +560,7 @@ namespace MazeSolverV1_0
                 if (isSolution)
                 {
                     int stepCounter = 0;
+                    string outputKey = "";
                     while (current.prev != null)
                     {
                         stepCounter++;
@@ -559,6 +570,7 @@ namespace MazeSolverV1_0
                             //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
                         }
 
+                        outputKey = outputKey + current.prev.x + current.prev.y;
                         current = current.prev;
                     }
                     this.RepaintWithBMP(0);
@@ -567,6 +579,9 @@ namespace MazeSolverV1_0
                     watch.Stop();
                     var elapsed = watch.ElapsedMilliseconds;
                     this.timeElapsedLabel.Text = "Time elapsed: " + elapsed+"ms";
+                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();
+                    
+                    
                 }
                 else
                 {
@@ -579,6 +594,26 @@ namespace MazeSolverV1_0
             
 
         }
+
+        public int GetStableHash(string s)
+        {
+            uint hash = 0;
+            // if you care this can be done much faster with unsafe 
+            // using fixed char* reinterpreted as a byte*
+            foreach (byte b in System.Text.Encoding.Unicode.GetBytes(s))
+            {
+                hash += b;
+                hash += (hash << 10);
+                hash ^= (hash >> 6);
+            }
+            // final avalanche
+            hash += (hash << 3);
+            hash ^= (hash >> 11);
+            hash += (hash << 15);
+            // helpfully we only want positive integer < MUST_BE_LESS_THAN
+            // so simple truncate cast is ok if not perfect
+            return (int)(hash % MUST_BE_LESS_THAN);
+       }
 
         private void RunDFS()
         {
@@ -657,6 +692,171 @@ namespace MazeSolverV1_0
 
 
         }
+        public void RunAStarOrGreedy(bool isAStar)
+        {
+            try
+            {
+                List<Cell> openSet = new List<Cell>();
+                List<Cell> closedSet = new List<Cell>();
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                bool isSolution = false;
+                int nodeCounter = 0;
+                Cell current = new Cell();
+                this.mStartCell.f = this.mStartCell.g = this.mStartCell.h = 0;
+                openSet.Add(this.mStartCell);
+                while(openSet.Count>0)
+                {
+                    nodeCounter++;
+                    openSet = openSet.OrderBy(x => x.f).ToList();
+                    current = openSet[0];
+                    openSet.RemoveAt(0);
+                    closedSet.Add(current);
+                    if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
+                    {
+                        this.mMaze[current.x, current.y].type = CLOSED;
+                    }
+                    if(current.Equals(this.mTargetCell))
+                    {
+                        isSolution = true;
+                        //this.mMaze[this.mTargetCell.x, this.mTargetCell.y].prev = current;
+                        break;
+                        
+                    }
+                    foreach (var cell in current.neighbors)
+                    {
+                        int dxg = current.x - cell.x;
+                        int dyg = current.y - cell.y;
+                        int dxh = this.mTargetCell.x - cell.x;
+                        int dyh = this.mTargetCell.y - cell.y;
+                        if(isAStar)
+                        {
+                            cell.g = current.g + Math.Abs(dxg) + Math.Abs(dyg); //euklid
+                        }
+                        else
+                        {
+                            cell.g = 0;
+                        }
+                        
+                        cell.h = Math.Abs(dxh) + Math.Abs(dyh);
+                        cell.f = cell.g + cell.h;
+
+                        if(IsCellInList(openSet,cell)==-1)
+                        {
+                            cell.prev = current;
+                        }
+                        
+
+                        int openIndex = IsCellInList(openSet, cell);
+                        int closedIndex = IsCellInList(closedSet, cell);
+
+                        if (openIndex == -1 && closedIndex == -1)
+                        {
+                            openSet.Add(cell);
+                            if (this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
+                            {
+                                this.mMaze[cell.x, cell.y].type = FRONTIER;
+                            }
+                        }
+                        else
+                        {
+                            if (openIndex > -1)
+                            {
+                                if (openSet[openIndex].f <= cell.f)
+                                {
+                                    // ... then eject the new node with state Sj.
+                                    // (ie do nothing for this node).
+                                    // Else, ...
+                                }
+                                else
+                                {
+                                    // ... remove the element (Sj, old) from the list
+                                    // to which it belongs ...
+                                    openSet.RemoveAt(openIndex);
+                                    // ... and add the item (Sj, new) to the OPEN SET.
+                                    openSet.Add(cell);
+                                    // Update the color of the cell
+                                    if (this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
+                                    {
+                                        this.mMaze[cell.x, cell.y].type = FRONTIER;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (closedSet[closedIndex].f <= cell.f)
+                                {
+                                    // ... then eject the new node with state Sj.
+                                    // (ie do nothing for this node).
+                                    // Else, ...
+                                }
+                                else
+                                {
+                                    // ... remove the element (Sj, old) from the list
+                                    // to which it belongs ...
+                                    closedSet.RemoveAt(closedIndex);
+                                    // ... and add the item (Sj, new) to the OPEN SET.
+                                    openSet.Add(cell);
+                                    // Update the color of the cell
+                                    if(this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
+                                    {
+                                        this.mMaze[cell.x, cell.y].type = FRONTIER;
+                                    }
+                                    
+                                }
+                            }
+                        }
+
+                    }
+                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+                }
+
+                if (isSolution)
+                {
+                    int stepCounter = 0;
+                    while (current.prev != null)
+                    {
+                        stepCounter++;
+                        if (this.mMaze[current.prev.x, current.prev.y].type != START)
+                        {
+                            this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
+                            //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
+                        }
+
+                        current = current.prev;
+                    }
+                    this.RepaintWithBMP(0);
+                    string message = "Number of traversed nodes: " + nodeCounter + ", number of steps: " + stepCounter;
+                    this.outputMsgLabel.Text = message;
+                    watch.Stop();
+                    var elapsed = watch.ElapsedMilliseconds;
+                    this.timeElapsedLabel.Text = "Time elapsed: " + elapsed + "ms";
+                }
+                else
+                {
+                    string message = "There is no solution";
+                    this.outputMsgLabel.Text = message;
+                }
+                this.RepaintWithBMP(0);
+
+            }
+            catch (Exception ex) { }
+        }
+
+        private int IsCellInList(List<Cell> list, Cell c)
+        {
+            int res = 0;
+            foreach (var item in list)
+            {
+                if(item.Equals(c))
+                {
+                    return res;
+                }
+                res++;
+            }
+            return -1;
+        }
+
+
 
         public class Cell
         {
