@@ -587,6 +587,8 @@ namespace MazeSolverV1_0
                 {
                     string message = "There is no solution";
                     this.outputMsgLabel.Text = message;
+                    this.timeElapsedLabel.Text = String.Empty;
+                    this.KeyLabel.Text = String.Empty;
                 }
             }
             catch (Exception ex) { }
@@ -598,20 +600,16 @@ namespace MazeSolverV1_0
         public int GetStableHash(string s)
         {
             uint hash = 0;
-            // if you care this can be done much faster with unsafe 
-            // using fixed char* reinterpreted as a byte*
             foreach (byte b in System.Text.Encoding.Unicode.GetBytes(s))
             {
                 hash += b;
                 hash += (hash << 10);
                 hash ^= (hash >> 6);
             }
-            // final avalanche
             hash += (hash << 3);
             hash ^= (hash >> 11);
             hash += (hash << 15);
-            // helpfully we only want positive integer < MUST_BE_LESS_THAN
-            // so simple truncate cast is ok if not perfect
+
             return (int)(hash % MUST_BE_LESS_THAN);
        }
 
@@ -625,6 +623,7 @@ namespace MazeSolverV1_0
                 s.Push(this.mStartCell);
                 int nodeCounter = 0;
                 Cell current = new Cell();
+                string outputKey = "";
                 while (s.Count > 0)
                 {
                     nodeCounter++;
@@ -671,7 +670,7 @@ namespace MazeSolverV1_0
                             this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
                             //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
                         }
-
+                        outputKey = outputKey + current.prev.x + current.prev.y;
                         current = current.prev;
                     }
                     this.RepaintWithBMP(0);
@@ -680,11 +679,14 @@ namespace MazeSolverV1_0
                     watch.Stop();
                     var elapsed = watch.ElapsedMilliseconds;
                     this.timeElapsedLabel.Text = "Time elapsed: " + elapsed + "ms";
+                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();
                 }
                 else
                 {
                     string message = "There is no solution";
                     this.outputMsgLabel.Text = message;
+                    this.timeElapsedLabel.Text = String.Empty;
+                    this.KeyLabel.Text = String.Empty;
                 }
             }
             catch (Exception ex) { }
@@ -702,6 +704,7 @@ namespace MazeSolverV1_0
                 bool isSolution = false;
                 int nodeCounter = 0;
                 Cell current = new Cell();
+                string outputKey = "";
                 this.mStartCell.f = this.mStartCell.g = this.mStartCell.h = 0;
                 openSet.Add(this.mStartCell);
                 while(openSet.Count>0)
@@ -740,7 +743,7 @@ namespace MazeSolverV1_0
                         cell.h = Math.Abs(dxh) + Math.Abs(dyh);
                         cell.f = cell.g + cell.h;
 
-                        if(IsCellInList(openSet,cell)==-1)
+                        if(IsCellInList(closedSet,cell)==-1)
                         {
                             cell.prev = current;
                         }
@@ -821,7 +824,7 @@ namespace MazeSolverV1_0
                             this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
                             //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
                         }
-
+                        outputKey = outputKey + current.prev.x + current.prev.y;
                         current = current.prev;
                     }
                     this.RepaintWithBMP(0);
@@ -830,11 +833,14 @@ namespace MazeSolverV1_0
                     watch.Stop();
                     var elapsed = watch.ElapsedMilliseconds;
                     this.timeElapsedLabel.Text = "Time elapsed: " + elapsed + "ms";
+                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();
                 }
                 else
                 {
                     string message = "There is no solution";
                     this.outputMsgLabel.Text = message;
+                    this.timeElapsedLabel.Text = String.Empty;
+                    this.KeyLabel.Text = String.Empty;
                 }
                 this.RepaintWithBMP(0);
 
