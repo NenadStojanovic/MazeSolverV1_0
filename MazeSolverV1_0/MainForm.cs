@@ -28,7 +28,8 @@ namespace MazeSolverV1_0
         public Cell mStartCell;
         public Cell mTargetCell;
 
-        const int MUST_BE_LESS_THAN = 100000000;
+        public const int MUST_BE_LESS_THAN = 100000000;
+        public const int MAX_VALUE = Int32.MaxValue;
 
         private bool mIsStartOk=true;
         private bool mIsTargetOk=true;
@@ -424,6 +425,10 @@ namespace MazeSolverV1_0
             {
                 this.RunAStarOrGreedy(false);
             }
+            else if (dijkstraRB.Checked)
+            {
+                this.RunDijkstra();
+            }
         }
 
 
@@ -596,6 +601,8 @@ namespace MazeSolverV1_0
             
 
         }
+
+
 
         public int GetStableHash(string s)
         {
@@ -846,6 +853,108 @@ namespace MazeSolverV1_0
 
             }
             catch (Exception ex) { }
+        }
+
+        public void RunDijkstra()
+        {
+            try
+            {
+                List<Cell> openSet = new List<Cell>();
+                List<Cell> closedSet = new List<Cell>();
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                bool isSolution = false;
+                int nodeCounter = 0;
+                Cell current = new Cell();
+                string outputKey = "";
+                this.InitDijkstra();
+                List<Cell> updatedNeighbours = new List<Cell>();
+                openSet.Add(this.mStartCell);
+                while (openSet.Count > 0)
+                {
+                    nodeCounter++;
+                    openSet = openSet.OrderBy(x => x.dist).ToList();
+                    current = openSet[0];
+                    openSet.RemoveAt(0);
+                    closedSet.Add(current);
+                    if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
+                    {
+                        this.mMaze[current.x, current.y].type = CLOSED;
+                    }
+                    if (current.Equals(this.mTargetCell))
+                    {
+                        isSolution = true;
+                        //this.mMaze[this.mTargetCell.x, this.mTargetCell.y].prev = current;
+                        break;
+
+                    }
+                    foreach (var cell in current.neighbors)
+                    {
+                        
+                        if(IsCellInList(closedSet,cell) == -1)
+                        {
+                            int newPathPrice = current.dist + 1;
+                            if (cell.dist > newPathPrice)
+                            {
+                                cell.dist = newPathPrice;
+                            }
+                            if (this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
+                            {
+                                this.mMaze[cell.x, cell.y].type = FRONTIER;
+                            }
+                            openSet.Add(cell);
+                            cell.prev = current;
+                        }
+                        
+
+                    }
+                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+                }
+
+                if (isSolution)
+                {
+                    int stepCounter = 0;
+                    while (current.prev != null)
+                    {
+                        stepCounter++;
+                        if (this.mMaze[current.prev.x, current.prev.y].type != START)
+                        {
+                            this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
+                            //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
+                        }
+                        outputKey = outputKey + current.prev.x + current.prev.y;
+                        current = current.prev;
+                    }
+                    this.RepaintWithBMP(0);
+                    string message = "Number of traversed nodes: " + nodeCounter + ", number of steps: " + stepCounter;
+                    this.outputMsgLabel.Text = message;
+                    watch.Stop();
+                    var elapsed = watch.ElapsedMilliseconds;
+                    this.timeElapsedLabel.Text = "Time elapsed: " + elapsed + "ms";
+                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();
+                }
+                else
+                {
+                    string message = "There is no solution";
+                    this.outputMsgLabel.Text = message;
+                    this.timeElapsedLabel.Text = String.Empty;
+                    this.KeyLabel.Text = String.Empty;
+                }
+                this.RepaintWithBMP(0);
+
+            }
+            catch (Exception ex) { }
+        }
+
+        public void InitDijkstra()
+        {
+            for (int i = 0; i < this.mRows; i++)
+            {
+                for (int j = 0; j < this.mCols; j++)
+                {
+                    this.mMaze[i, j].dist = MAX_VALUE;
+                }
+            }
+            this.mMaze[this.mStartCell.x, this.mStartCell.y].dist = 0;
         }
 
         private int IsCellInList(List<Cell> list, Cell c)
