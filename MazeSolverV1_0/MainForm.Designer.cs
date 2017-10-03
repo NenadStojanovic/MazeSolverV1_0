@@ -562,7 +562,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.MazeGridGB);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "MazeSolver";
             this.MazeGridGB.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mazePictureBox)).EndInit();
             this.groupBox2.ResumeLayout(false);
