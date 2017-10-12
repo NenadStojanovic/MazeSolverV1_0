@@ -13,35 +13,34 @@ namespace MazeSolverV1_0
 {
     public partial class MainForm : Form
     {
-        private string mSource;
+        private string mSource; //putanja do izvorisnog foldera
         private bool mIsDestOK;
-        private Cell[,] mMaze;
-        int mRows;
-        int mCols;
-        int mSquareSize;
-        int mPaddingTop = 20;
-        int mPaddingLeft = 10;
-        int mInitGridSize = 10;
-        private Dictionary<string, string> mFileNames = new Dictionary<string, string>();
+        private Cell[,] mMaze; //matricna reprezentacija lavirinta tj grafa
+        int mRows; //broj vrsta lavirinta
+        int mCols; //broj kolona lavirinta
+        int mSquareSize; //velicina jednog polja
+        int mPaddingTop = 20; //pomeraj za iscrtavanje lavirinta
+        int mPaddingLeft = 10; //pomeraj za iscrtavanje lavirinta
+        int mInitGridSize = 10; //pocetna vrednost velicine lavirinta
+        private Dictionary<string, string> mFileNames = new Dictionary<string, string>(); //par kljuc vrednost gde je kljuc ime fajla a vrednost putanja do fajla
         public static bool dfs, bfs, aStar, greedy, dijkstra;
 
-        public Cell mStartCell;
-        public Cell mTargetCell;
+        public Cell mStartCell; //pocetno polje lavirinta
+        public Cell mTargetCell; //ciljno polje lavirinta
 
-        public const int MUST_BE_LESS_THAN = 100000000;
-        public const int MAX_VALUE = Int32.MaxValue;
+        public const int MUST_BE_LESS_THAN = 100000000; //vrednost koja se koristi za odsecanje kod generisanja hes vrednosti kljuca
+        public const int MAX_VALUE = Int32.MaxValue; //zamena za beskonacnu vrednost kod Dijkstrinog algoritma
 
-        private bool mIsStartOk=true;
-        private bool mIsTargetOk=true;
+        private bool mIsStartOk=true; //pokazatelj da li je startno polje u redu kod validacje lavirinta
+        private bool mIsTargetOk=true; //pokazatelj da li je ciljno polje u redu kod validacje lavirinta
 
-        public static int INFINITY = Int32.MaxValue; // The representation of the infinite
-        public static int EMPTY = 0;  // empty cell
-        public static int OBST = 1;  // cell with obstacle
-        public static int START = 2;  // the position of the robot
-        public static int TARGET = 3;  // the position of the target
-        public static int FRONTIER = 4;  // cells that form the frontier (OPEN SET)
-        public static int CLOSED = 5;  // cells that form the CLOSED SET
-        public static int ROUTE = 6;  // cells that form the robot-to-target path
+        public static int EMPTY = 0;  // prazno polje
+        public static int OBST = 1;  // prepreka tj. zid
+        public static int START = 2;  // pocetno polje
+        public static int TARGET = 3;  // ciljno polje
+        public static int FRONTIER = 4;  // polje koje ce naredno biti obradjeno
+        public static int CLOSED = 5;  // obradjeno polje
+        public static int ROUTE = 6;  // polje koje se nalazi na putu do resenja
 
         // Messages to the user
 
@@ -49,6 +48,9 @@ namespace MazeSolverV1_0
         string msgSelectStepByStepEtc = "Click 'Step-by-Step' or 'Animation' or 'Clear'";
         string msgNoSolution = "There is no path to the target !!!";
 
+        /// <summary>
+        /// Iniciranje glavne forme pri startovanju aplikacije
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -63,6 +65,12 @@ namespace MazeSolverV1_0
 
 
         }
+
+        /// <summary>
+        /// Dugme za ucitavanje foldera i aktivaciju FileSystemWatcher-a nad datim folderom
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SourcePathBtn_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog dialog = new FolderBrowserDialog();
@@ -83,6 +91,9 @@ namespace MazeSolverV1_0
             }
         }
 
+        /// <summary>
+        /// metoda koja kreira mapu putanja i imena fajlova
+        /// </summary>
         public void _readFiles()
         {
             string[] dirs = System.IO.Directory.GetFiles(this.mSource, "*.*");
@@ -94,6 +105,11 @@ namespace MazeSolverV1_0
             }
         }
 
+        /// <summary>
+        /// Event FSW-a kod kreiranja novog fajla u folderu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void fileSystemWatcherSource_Created(object sender, FileSystemEventArgs e)
         {
             if (!this.mFileNames.ContainsKey(e.FullPath))
@@ -105,6 +121,11 @@ namespace MazeSolverV1_0
             this.lbSource.Items.Add(Path.GetFileName(e.FullPath));
         }
 
+        /// <summary>
+        /// Event FSW-a kod brisanja fajla u folderu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void fileSystemWatcherSource_Deleted(object sender, FileSystemEventArgs e)
         {
             this.mFileNames.Remove(Path.GetFileName(e.FullPath));
@@ -116,6 +137,11 @@ namespace MazeSolverV1_0
             bfs = aStar = greedy = dijkstra = false;
         }
 
+        /// <summary>
+        /// Ciscenje lavirinta od prethodne pretrage
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void clearBtn_Click(object sender, EventArgs e)
         {
             //this.InitMaze();
@@ -137,6 +163,11 @@ namespace MazeSolverV1_0
             this.RepaintWithBMP(0);
         }
 
+        /// <summary>
+        /// Kreiranje nove podloge za lavirint
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newGridBtn_Click(object sender, EventArgs e)
         {
             this.mRows = Int32.Parse(this.rowsTB.Text);
@@ -146,6 +177,11 @@ namespace MazeSolverV1_0
             this.RepaintWithBMP(0);
         }
 
+        /// <summary>
+        /// Metoda za odabir konkretnog lavirinta iz liste lavirinata
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lbSource_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var senderList = (ListBox)sender;
@@ -157,6 +193,9 @@ namespace MazeSolverV1_0
             }
         }
 
+        /// <summary>
+        /// Metoda koja inicijalizuje pocetne vrednosti praznog lavirinta
+        /// </summary>
         public void InitMaze()
         {
             for (int i = 0; i < mRows; i++)
@@ -183,29 +222,33 @@ namespace MazeSolverV1_0
             this.ConnectGraph();
         }
 
+        /// <summary>
+        /// Metoda koja ponovo iscrtava lavirint na osnovu vrednosti iz mMaze atributa u obliku bitmap slike, parametar delay oznacava period usporenja tj. kasnjenja u animaciji
+        /// </summary>
+        /// <param name="delay"></param>
         public void RepaintWithBMP(int delay)
         {
-            System.Threading.Thread.Sleep(delay);
-            int gridWidth = this.mazePictureBox.Width - 25;
-            this.mSquareSize = gridWidth / this.mRows;
+            if(delay>0) //provera kašnjenja
+            {
+                System.Threading.Thread.Sleep(delay);
+            }
+            int gridWidth = this.mazePictureBox.Width - 25; //proračun veličine mreže
+            this.mSquareSize = gridWidth / this.mRows; //proračun veličine polja
+            //kreiranje bitmape odredjene veličine
             var bmp = new Bitmap(this.mazePictureBox.Width+mSquareSize, this.mazePictureBox.Height+mSquareSize, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             using (var g = Graphics.FromImage(bmp))
             using (var p = new Pen(Color.Black))
             using (var b = new SolidBrush(Color.White))
-            {
+            { //iteracija kroz sve elemente lavirinta i kreiranje odgovarajućeg Rectangle elementa za svako polje
                 for (int i = 0; i < mRows; i++)
                 {
                     for (int j = 0; j < mCols; j++)
                     {
+                        //proračunavanje pozicije kvadratu u okviru slike
                         int xPosition = (j * mSquareSize) + this.mPaddingLeft;
                         int yPosition = (i * mSquareSize) + this.mPaddingTop;
                         Rectangle rect = new Rectangle(xPosition, yPosition, mSquareSize, mSquareSize);
-                        //this.mMaze[i, j].box.SetBounds(xPosition, yPosition, mSquareSzie, mSquareSzie);
-                        //Label lbl = new Label();
-                        //lbl.Text = i + "," + j;
-                        //this.mMaze[i, j].box.Controls.Add(lbl);
-
-
+                        //odabir odgovarajuceg tipa...
                         if (this.mMaze[i, j].type == EMPTY)
                         {
                             b.Color = Color.White;
@@ -261,12 +304,16 @@ namespace MazeSolverV1_0
 
                 }
             }
+            //postavljanje bitmape u PictureBox koji predstavlja lavirint u aplikaciji
             this.mazePictureBox.Visible = true;
             this.mazePictureBox.Image = bmp;
             this.mazePictureBox.BringToFront();
             this.mazePictureBox.Refresh();
         }
 
+        /// <summary>
+        /// Metoda koja ponovo iscrtava lavirint na osnovu mMaze atributa koristeci PictureBox elemente
+        /// </summary>
         public void Repaint()
         {
             int gridWidth = this.MazeGridGB.Size.Width - 25;
@@ -322,6 +369,10 @@ namespace MazeSolverV1_0
             }
         }
 
+        /// <summary>
+        /// Metoda koja za zadati fajl preko putanje parametra path kreira lavirint iz tekstualnog fajla
+        /// </summary>
+        /// <param name="path"></param>
         public void GenerateMazeFromFile(string path)
         {
             try
@@ -374,6 +425,9 @@ namespace MazeSolverV1_0
            
         }
 
+        /// <summary>
+        /// Metoda koja povezuje svaki cvor u grafu sa svojim susedima u odnosu na tip polja suseda
+        /// </summary>
         private void ConnectGraph()
         {
             for (int i = 0; i < mRows; i++)
@@ -407,6 +461,11 @@ namespace MazeSolverV1_0
             }
         }
 
+        /// <summary>
+        /// Metoda za pokretanje odredjenog postupka za resavanje lavirinta u zavisnosti od korisnikovog izbora
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void solveMazeBtn_Click(object sender, EventArgs e)
         {
             if(bfsRB.Checked)
@@ -432,7 +491,12 @@ namespace MazeSolverV1_0
         }
 
 
-
+        /// <summary>
+        /// Metoda koja za zadate koordinate cvora proverava da li ne redstavlja prepreku u lavirintu
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        /// <returns></returns>
         private bool CheckIfFree(int i, int j)
         {
             if (i < 0 || j < 0 || i >= this.mRows || j >= this.mCols)
@@ -443,6 +507,11 @@ namespace MazeSolverV1_0
                 return false;
         }
 
+        /// <summary>
+        /// Metoda koja obradjuje interakciju korisnika s lavirintom odnosno rukuje s klikovima korisnika u okviru lavirinta
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mazePictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             int xPosition = (e.X - 10) / this.mSquareSize;
@@ -517,6 +586,9 @@ namespace MazeSolverV1_0
             }
         }
 
+        /// <summary>
+        /// Metoda koja simulira pronalazak puta u grafu koriscenjem BFS metode
+        /// </summary>
         private void RunBFS()
         {
             try
@@ -532,13 +604,10 @@ namespace MazeSolverV1_0
                     nodeCounter++;
                     current = q.Dequeue();
                     current.isVisited = true;
-                    //this.mMaze[current.x, current.y].box.BackColor =  Color.Cyan;
                     if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
                     {
                         this.mMaze[current.x, current.y].type = CLOSED;
                     }
-
-
                     if (current.Equals(this.mTargetCell))
                     {
                         isSolution = true;
@@ -556,11 +625,8 @@ namespace MazeSolverV1_0
                             n.prev = current;
                             q.Enqueue(n);
                         }
-
                     }
-
                     this.RepaintWithBMP(this.DelayTrackBar.Value);
-
                 }
                 if (isSolution)
                 {
@@ -572,9 +638,7 @@ namespace MazeSolverV1_0
                         if (this.mMaze[current.prev.x, current.prev.y].type != START)
                         {
                             this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
-                            //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
                         }
-
                         outputKey = outputKey + current.prev.x + current.prev.y;
                         current = current.prev;
                     }
@@ -584,9 +648,7 @@ namespace MazeSolverV1_0
                     watch.Stop();
                     var elapsed = watch.ElapsedMilliseconds;
                     this.timeElapsedLabel.Text = "Time elapsed: " + elapsed+"ms";
-                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();
-                    
-                    
+                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();                                        
                 }
                 else
                 {
@@ -597,62 +659,69 @@ namespace MazeSolverV1_0
                 }
             }
             catch (Exception ex) { }
-            
-            
-
+                      
         }
 
 
-
+        /// <summary>
+        /// Metoda koja ulazni string s pretvara u osmocifreni hesirani broj
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public int GetStableHash(string s)
         {
-            uint hash = 0;
+            uint hash = 0; //rezultujuća vrednost
+            //jednostavno heširanje svakog bajta ulaznog stringa 
             foreach (byte b in System.Text.Encoding.Unicode.GetBytes(s))
             {
                 hash += b;
                 hash += (hash << 10);
                 hash ^= (hash >> 6);
             }
+            //još jedna dodatna runda
             hash += (hash << 3);
             hash ^= (hash >> 11);
             hash += (hash << 15);
 
+            //odsecanje ključa
             return (int)(hash % MUST_BE_LESS_THAN);
        }
 
+        /// <summary>
+        /// Metoda koja simulira pronalazak puta u grafu koriscenjem DFS metode
+        /// </summary>
         private void RunDFS()
         {
             try
             {
-                var watch = System.Diagnostics.Stopwatch.StartNew();
-                bool isSolution = false;
-                var s = new Stack<Cell>();
-                s.Push(this.mStartCell);
-                int nodeCounter = 0;
+                var watch = System.Diagnostics.Stopwatch.StartNew(); //Sistemska štoperica za merenje vremena
+                bool isSolution = false; //promenljiva koja govori o statusu pronalaska rešenja 
+                var s = new Stack<Cell>(); //stek struktura za čuvanje čvorova koje treba obraditi
+                s.Push(this.mStartCell); 
+                int nodeCounter = 0; //brojač obrađenih čvorova
                 Cell current = new Cell();
                 string outputKey = "";
                 while (s.Count > 0)
                 {
                     nodeCounter++;
-                    current = s.Pop();
+                    current = s.Pop(); //odabir sledećeg čvora za obradu
                     current.isVisited = true;
                     //this.mMaze[current.x, current.y].box.BackColor =  Color.Cyan;
-                    if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
+                    if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)//postavljanje određene boje polja
                     {
                         this.mMaze[current.x, current.y].type = CLOSED;
                     }
 
 
-                    if (current.Equals(this.mTargetCell))
+                    if (current.Equals(this.mTargetCell)) //provera da li se stiglo do cilja
                     {
                         isSolution = true;
                         break;
                     }
-                    foreach (var n in current.neighbors)
+                    foreach (var n in current.neighbors) //obrada potomaka
                     {
                         if (!n.isVisited)
                         {
-                            //this.mMaze[n.x, n.y].box.BackColor = Color.Blue;
                             if (this.mMaze[n.x, n.y].type != TARGET && this.mMaze[n.x, n.y].type != START)
                             {
                                 this.mMaze[n.x, n.y].type = FRONTIER;
@@ -663,30 +732,30 @@ namespace MazeSolverV1_0
 
                     }
 
-                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+                    this.RepaintWithBMP(this.DelayTrackBar.Value); //ponovno iscrtavanje lavirinta
 
                 }
-                if (isSolution)
+                if (isSolution) //ukoliko se došlo do rešenja...
                 {
-                    int stepCounter = 0;
-                    while (current.prev != null)
+                    int stepCounter = 0; //brojač koraka do rešenja
+                    while (current.prev != null) //rekonstruisanje puta do rešenja na osnovu prethodnika
                     {
                         stepCounter++;
                         if (this.mMaze[current.prev.x, current.prev.y].type != START)
                         {
                             this.mMaze[current.prev.x, current.prev.y].type = ROUTE;
-                            //this.mMaze[current.x, current.y].box.BackColor = Color.Yellow;
                         }
-                        outputKey = outputKey + current.prev.x + current.prev.y;
+                        outputKey = outputKey + current.prev.x + current.prev.y; //izdvajanje ključa
                         current = current.prev;
                     }
-                    this.RepaintWithBMP(0);
+                    this.RepaintWithBMP(0);//ponovno iscrtavanje lavirinta sa rešenjem
+                    //sledi ispis statističkih podataka
                     string message = "Number of traversed nodes: " + nodeCounter + ", number of steps: " + stepCounter;
                     this.outputMsgLabel.Text = message;
                     watch.Stop();
                     var elapsed = watch.ElapsedMilliseconds;
                     this.timeElapsedLabel.Text = "Time elapsed: " + elapsed + "ms";
-                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString();
+                    this.KeyLabel.Text = this.GetStableHash(outputKey).ToString(); //heširanje ključa
                 }
                 else
                 {
@@ -701,62 +770,63 @@ namespace MazeSolverV1_0
 
 
         }
+
+        /// <summary>
+        /// Metoda koja simulira pronalazak puta u grafu koriscenjem A* ili Greedy metode u zavisnosti od parametra isAStar
+        /// </summary>
+        /// <param name="isAStar"></param>
         public void RunAStarOrGreedy(bool isAStar)
         {
             try
             {
-                List<Cell> openSet = new List<Cell>();
-                List<Cell> closedSet = new List<Cell>();
-                var watch = System.Diagnostics.Stopwatch.StartNew();
-                bool isSolution = false;
-                int nodeCounter = 0;
-                Cell current = new Cell();
+                List<Cell> openSet = new List<Cell>(); //lista čvorova koje treba obraditi
+                List<Cell> closedSet = new List<Cell>(); //lista obrađenih čvorova
+                var watch = System.Diagnostics.Stopwatch.StartNew(); 
+                bool isSolution = false; //status pronalaska rešenja
+                int nodeCounter = 0; //bojač obrađenih čvorova
+                Cell current = new Cell(); //trenutni čvor za obradu
                 string outputKey = "";
-                this.mStartCell.f = this.mStartCell.g = this.mStartCell.h = 0;
+                this.mStartCell.f = this.mStartCell.g = this.mStartCell.h = 0; //inicijalne f,g i h vrednosti
                 openSet.Add(this.mStartCell);
-                while(openSet.Count>0)
+                while(openSet.Count>0) //petlja za izvršenje algoritma
                 {
                     nodeCounter++;
-                    openSet = openSet.OrderBy(x => x.f).ToList();
-                    current = openSet[0];
+                    openSet = openSet.OrderBy(x => x.f).ToList(); //prioritizacija čvorova po vrednosti f
+                    current = openSet[0]; //odabir trenutnog čvora
                     openSet.RemoveAt(0);
                     closedSet.Add(current);
                     if (this.mMaze[current.x, current.y].type != TARGET && this.mMaze[current.x, current.y].type != START)
                     {
                         this.mMaze[current.x, current.y].type = CLOSED;
                     }
-                    if(current.Equals(this.mTargetCell))
+                    if(current.Equals(this.mTargetCell)) //ispitivanje pronalaska cilja
                     {
                         isSolution = true;
-                        //this.mMaze[this.mTargetCell.x, this.mTargetCell.y].prev = current;
-                        break;
-                        
+                        break;      
                     }
-                    foreach (var cell in current.neighbors)
+                    foreach (var cell in current.neighbors) //obrada sledbenika
                     {
+                        //proračun g i h vrednosti za trenutni čvor...
                         int dxg = current.x - cell.x;
                         int dyg = current.y - cell.y;
                         int dxh = this.mTargetCell.x - cell.x;
                         int dyh = this.mTargetCell.y - cell.y;
-                        if(isAStar)
+                        if(isAStar) //... u zavisnosti od odabranog algoritma
                         {
-                            cell.g = current.g + Math.Abs(dxg) + Math.Abs(dyg); //euklid
+                            cell.g = current.g + Math.Abs(dxg) + Math.Abs(dyg); 
                         }
                         else
                         {
                             cell.g = 0;
                         }
-                        
                         cell.h = Math.Abs(dxh) + Math.Abs(dyh);
                         cell.f = cell.g + cell.h;
 
-                        if(IsCellInList(closedSet,cell)==-1)
+                        if(IsCellInList(closedSet,cell)==-1) //odredjivanje prethodnika
                         {
                             cell.prev = current;
-                        }
-                        
-
-                        int openIndex = IsCellInList(openSet, cell);
+                        }          
+                        int openIndex = IsCellInList(openSet, cell); //promenljive za pomoć pri klasifikaciji čvora u određenu listu
                         int closedIndex = IsCellInList(closedSet, cell);
 
                         if (openIndex == -1 && closedIndex == -1)
@@ -769,22 +839,12 @@ namespace MazeSolverV1_0
                         }
                         else
                         {
-                            if (openIndex > -1)
+                            if (openIndex > -1) //klasifikacija čvora u određenu listu
                             {
-                                if (openSet[openIndex].f <= cell.f)
+                                if (openSet[openIndex].f > cell.f)
                                 {
-                                    // ... then eject the new node with state Sj.
-                                    // (ie do nothing for this node).
-                                    // Else, ...
-                                }
-                                else
-                                {
-                                    // ... remove the element (Sj, old) from the list
-                                    // to which it belongs ...
                                     openSet.RemoveAt(openIndex);
-                                    // ... and add the item (Sj, new) to the OPEN SET.
                                     openSet.Add(cell);
-                                    // Update the color of the cell
                                     if (this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
                                     {
                                         this.mMaze[cell.x, cell.y].type = FRONTIER;
@@ -793,31 +853,20 @@ namespace MazeSolverV1_0
                             }
                             else
                             {
-                                if (closedSet[closedIndex].f <= cell.f)
+                                if (closedSet[closedIndex].f > cell.f)
                                 {
-                                    // ... then eject the new node with state Sj.
-                                    // (ie do nothing for this node).
-                                    // Else, ...
-                                }
-                                else
-                                {
-                                    // ... remove the element (Sj, old) from the list
-                                    // to which it belongs ...
                                     closedSet.RemoveAt(closedIndex);
-                                    // ... and add the item (Sj, new) to the OPEN SET.
                                     openSet.Add(cell);
-                                    // Update the color of the cell
-                                    if(this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
+                                    if (this.mMaze[cell.x, cell.y].type != TARGET && this.mMaze[cell.x, cell.y].type != START)
                                     {
                                         this.mMaze[cell.x, cell.y].type = FRONTIER;
                                     }
-                                    
                                 }
                             }
                         }
 
                     }
-                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+                    this.RepaintWithBMP(this.DelayTrackBar.Value); //ponovno iscrtavanje lavirinta s novim korakom
                 }
 
                 if (isSolution)
@@ -855,24 +904,26 @@ namespace MazeSolverV1_0
             catch (Exception ex) { }
         }
 
+        /// <summary>
+        /// Metoda koja simulira pronalazak puta u grafu koriscenjem Dijkstrinog algoritma
+        /// </summary>
         public void RunDijkstra()
         {
             try
             {
-                List<Cell> openSet = new List<Cell>();
-                List<Cell> closedSet = new List<Cell>();
-                var watch = System.Diagnostics.Stopwatch.StartNew();
-                bool isSolution = false;
-                int nodeCounter = 0;
-                Cell current = new Cell();
+                List<Cell> openSet = new List<Cell>(); //lista čvorova koje treba obraditi
+                List<Cell> closedSet = new List<Cell>(); //lista obrađenih čvorova
+                var watch = System.Diagnostics.Stopwatch.StartNew(); //sistemska štoperica za računanje vremena izvršenja algoritma
+                bool isSolution = false; //status pronalaska rešenja
+                int nodeCounter = 0; //brojač obrađenih čvorova
+                Cell current = new Cell(); //trenutni čvor za obradu
                 string outputKey = "";
-                this.InitDijkstra();
-                List<Cell> updatedNeighbours = new List<Cell>();
+                this.InitDijkstra(); //inicijalizacija Dijkstrinog algoritma
                 openSet.Add(this.mStartCell);
-                while (openSet.Count > 0)
+                while (openSet.Count > 0) //petlja za izvršenje algoritma
                 {
                     nodeCounter++;
-                    openSet = openSet.OrderBy(x => x.dist).ToList();
+                    openSet = openSet.OrderBy(x => x.dist).ToList(); //prioritizacija čvorova po rastojanju
                     current = openSet[0];
                     openSet.RemoveAt(0);
                     closedSet.Add(current);
@@ -880,20 +931,18 @@ namespace MazeSolverV1_0
                     {
                         this.mMaze[current.x, current.y].type = CLOSED;
                     }
-                    if (current.Equals(this.mTargetCell))
+                    if (current.Equals(this.mTargetCell)) //provera pronalaska rešenja
                     {
                         isSolution = true;
-                        //this.mMaze[this.mTargetCell.x, this.mTargetCell.y].prev = current;
                         break;
 
                     }
-                    foreach (var cell in current.neighbors)
-                    {
-                        
+                    foreach (var cell in current.neighbors) //obrada sledbenika
+                    { 
                         if(IsCellInList(closedSet,cell) == -1)
                         {
-                            int newPathPrice = current.dist + 1;
-                            if (cell.dist > newPathPrice)
+                            int newPathPrice = current.dist + 1; //proračunavanje nove cene puta i...
+                            if (cell.dist > newPathPrice) //... upoređivanje sa starom
                             {
                                 cell.dist = newPathPrice;
                             }
@@ -901,13 +950,11 @@ namespace MazeSolverV1_0
                             {
                                 this.mMaze[cell.x, cell.y].type = FRONTIER;
                             }
-                            openSet.Add(cell);
-                            cell.prev = current;
-                        }
-                        
-
+                            openSet.Add(cell); //dodavanje nogov čvora za obradu
+                            cell.prev = current; 
+                        }                       
                     }
-                    this.RepaintWithBMP(this.DelayTrackBar.Value);
+                    this.RepaintWithBMP(this.DelayTrackBar.Value);//ponovno iscrtavanje lavirinta
                 }
 
                 if (isSolution)
@@ -945,6 +992,9 @@ namespace MazeSolverV1_0
             catch (Exception ex) { }
         }
 
+        /// <summary>
+        /// Metoda koja sluzi za postavljanje pocetnih vrednosti u cvorovima pre pokretanja Dijkstrinog algoritma
+        /// </summary>
         public void InitDijkstra()
         {
             for (int i = 0; i < this.mRows; i++)
@@ -957,6 +1007,12 @@ namespace MazeSolverV1_0
             this.mMaze[this.mStartCell.x, this.mStartCell.y].dist = 0;
         }
 
+        /// <summary>
+        /// Metoda koja proverava da li se objekat c tipa Cell nalazi u listi list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
         private int IsCellInList(List<Cell> list, Cell c)
         {
             int res = 0;
@@ -972,28 +1028,27 @@ namespace MazeSolverV1_0
         }
 
 
-
+        /// <summary>
+        /// Pomocna klasa za predstavljanje jednog cvora u grafu
+        /// </summary>
         public class Cell
         {
-            public int x;     //x cooridnates
-            public int y;     //y cooridnates
-            public int g;     // the value of the function g of A* and Greedy algorithms
-            public int h;     // the value of the function h of A* and Greedy algorithms
-            public int f;     // the value of the function f of A* and Greedy algorithms
-            public int dist;  // the distance of the cell from the initial position of the robot
-                      // Ie the label that updates the Dijkstra's algorithm
-            public Cell prev; // Each state corresponds to a cell
-                        // and each state has a predecessor which
-                        // is stored in this variable
-             
-            public List<Cell> neighbors = new List<Cell>();
-            public bool wall;
-            public bool open;
-            public bool isVisited;
+            public int x;     //x koordinata
+            public int y;     //y koordinata
+            public int g;     // vrednost funkcije g za A* i Greedy algoritme
+            public int h;     // vrednost funkcije h za A* i Greedy algoritme
+            public int f;     // vrednost funkcije f za A* i Greedy algoritme
+            public int dist;  // rastojanje odnosno cena puta kod Dijkstrinog algoritma
+                    
+            public Cell prev; //prethodnik datog cvora
 
-            public PictureBox box;
-            public int type;
-            public int keyValue;
+             
+            public List<Cell> neighbors = new List<Cell>(); //lista suseda
+            public bool isVisited; //pokazatelj da li je cvor obradjen
+
+            public PictureBox box; //PictureBox koriscen pri iscrtavanju
+            public int type; //tip polja: 
+            public int keyValue; //vrednost polja koja moze da se koristi pri generisanju kljuca
 
             public Cell()
             {
@@ -1008,8 +1063,6 @@ namespace MazeSolverV1_0
                 this.type = EMPTY;
                 this.box = new PictureBox();
                 this.box.BackColor = Color.White;
-                this.wall = false;
-                this.open = true;
                 this.isVisited = false;
                 this.neighbors = new List<Cell>();
             }
@@ -1019,8 +1072,6 @@ namespace MazeSolverV1_0
                 this.y = col;
                 this.type = type;
                 this.box = new PictureBox();
-                this.wall = false;
-                this.open = true;
                 this.isVisited = false;
                 this.neighbors = new List<Cell>();
             }

@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MazeSolverV1_0.MainForm">
+    <Position X="0.5" Y="0.5" Width="2.5" />
+    <Members>
+      <Field Name="Algorithms" Hidden="true" />
+      <Field Name="aStarRB" Hidden="true" />
+      <Field Name="bfsRB" Hidden="true" />
+      <Field Name="clearBtn" Hidden="true" />
+      <Field Name="colsTB" Hidden="true" />
+      <Field Name="components" Hidden="true" />
+      <Field Name="DelayTrackBar" Hidden="true" />
+      <Field Name="dfsRB" Hidden="true" />
+      <Field Name="dijkstra" Hidden="true" />
+      <Field Name="dijkstraRB" Hidden="true" />
+      <Field Name="fileSystemWatcherSource" Hidden="true" />
+      <Field Name="greedy" Hidden="true" />
+      <Field Name="greedyRB" Hidden="true" />
+      <Field Name="groupBox2" Hidden="true" />
+      <Field Name="groupBox3" Hidden="true" />
+      <Field Name="groupBox4" Hidden="true" />
+      <Field Name="groupBox5" Hidden="true" />
+      <Field Name="KoordinatesLabel" Hidden="true" />
+      <Field Name="label1" Hidden="true" />
+      <Field Name="label10" Hidden="true" />
+      <Field Name="label2" Hidden="true" />
+      <Field Name="label3" Hidden="true" />
+      <Field Name="label4" Hidden="true" />
+      <Field Name="label5" Hidden="true" />
+      <Field Name="label6" Hidden="true" />
+      <Field Name="label7" Hidden="true" />
+      <Field Name="label8" Hidden="true" />
+      <Field Name="label9" Hidden="true" />
+      <Field Name="labelSourceLink" Hidden="true" />
+      <Field Name="labelSourcePath" Hidden="true" />
+      <Field Name="lbSource" Hidden="true" />
+      <Field Name="newGridBtn" Hidden="true" />
+      <Field Name="outputMsgLabel" Hidden="true" />
+      <Field Name="pictureBox1" Hidden="true" />
+      <Field Name="pictureBox2" Hidden="true" />
+      <Field Name="pictureBox3" Hidden="true" />
+      <Field Name="pictureBox4" Hidden="true" />
+      <Field Name="pictureBox5" Hidden="true" />
+      <Field Name="pictureBox6" Hidden="true" />
+      <Field Name="pictureBox7" Hidden="true" />
+      <Field Name="rowsTB" Hidden="true" />
+      <Field Name="solveMazeBtn" Hidden="true" />
+      <Field Name="SourcePathBtn" Hidden="true" />
+      <Field Name="timeElapsedLabel" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="MazeSolverV1_0.MainForm.Cell">
+        <TypeIdentifier>
+          <NewMemberFileName>MainForm.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>HI0BIhMCEKBiJRuBAACJQlAbDIHmLeUgxCADvAhVABA=</HashCode>
+      <FileName>MainForm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
